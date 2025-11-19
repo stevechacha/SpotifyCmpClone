@@ -1,0 +1,53 @@
+package com.chachadev.spotifycmpclone.data.dto
+
+import com.chachadev.spotifycmpclone.domain.model.Playlist
+import com.chachadev.spotifycmpclone.domain.model.PlaylistOwner
+import com.chachadev.spotifycmpclone.domain.model.PlaylistTracks
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class PlaylistDto(
+    val id: String,
+    val name: String,
+    val description: String? = null,
+    val images: List<ImageDto>,
+    val owner: OwnerDto? = null,
+    val tracks: TracksInfoDto? = null,
+    @SerialName("external_urls") val externalUrls: ExternalUrlsDto? = null
+) {
+    fun toDomain(): Playlist {
+        return Playlist(
+            id = id,
+            name = name,
+            description = description,
+            images = images.map { it.toDomain() },
+            owner = owner?.toDomain(),
+            tracks = tracks?.toDomain(),
+            externalUrls = externalUrls?.toDomain()
+        )
+    }
+}
+
+@Serializable
+data class OwnerDto(
+    val id: String,
+    @SerialName("display_name") val displayName: String? = null
+) {
+    fun toDomain(): PlaylistOwner {
+        return PlaylistOwner(
+            id = id,
+            displayName = displayName
+        )
+    }
+}
+
+@Serializable
+data class TracksInfoDto(
+    val total: Int
+) {
+    fun toDomain(): PlaylistTracks {
+        return PlaylistTracks(total = total)
+    }
+}
+

@@ -1,0 +1,539 @@
+package com.chachadev.spotifycmpclone.presentation.ui.screen
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.chachadev.spotifycmpclone.domain.model.Album
+import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.Playlist
+import com.chachadev.spotifycmpclone.domain.model.Track
+import com.chachadev.spotifycmpclone.presentation.ui.component.ImageLoader
+import com.chachadev.spotifycmpclone.presentation.ui.component.TrackItem
+import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
+
+@Composable
+fun TrackScreen(
+    trackId: String,
+    onBack: () -> Unit = {}
+) {
+    DetailPlaceholderScreen(
+        title = "Track",
+        message = "Track ID: $trackId",
+        description = "Detailed track information will be added soon.",
+        onBack = onBack
+    )
+}
+
+@Composable
+fun AlbumScreen(
+    albumId: String,
+    viewModel: AlbumDetailViewModel,
+    onTrackSelected: (String) -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(albumId) {
+        viewModel.load(albumId)
+    }
+
+    DetailScreenScaffold(
+        title = uiState.album?.name ?: "Album",
+        onBack = onBack
+    ) { paddingValues ->
+        DetailScreenBody(
+            paddingValues = paddingValues,
+            isLoading = uiState.isLoading && uiState.tracks.isEmpty() && uiState.album == null,
+            error = uiState.error,
+            hasContent = uiState.album != null || uiState.tracks.isNotEmpty(),
+            onRetry = { viewModel.refresh() }
+        ) {
+            AlbumDetailContent(
+                album = uiState.album,
+                tracks = uiState.tracks,
+                isRefreshing = uiState.isLoading && uiState.tracks.isNotEmpty(),
+                error = uiState.error,
+                onRetry = { viewModel.refresh() },
+                onTrackSelected = onTrackSelected
+            )
+        }
+    }
+}
+
+@Composable
+fun ArtistScreen(
+    artistId: String,
+    viewModel: ArtistDetailViewModel,
+    onTrackSelected: (String) -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(artistId) {
+        viewModel.load(artistId)
+    }
+
+    DetailScreenScaffold(
+        title = uiState.artist?.name ?: "Artist",
+        onBack = onBack
+    ) { paddingValues ->
+        DetailScreenBody(
+            paddingValues = paddingValues,
+            isLoading = uiState.isLoading && uiState.topTracks.isEmpty() && uiState.artist == null,
+            error = uiState.error,
+            hasContent = uiState.artist != null || uiState.topTracks.isNotEmpty(),
+            onRetry = { viewModel.refresh() }
+        ) {
+            ArtistDetailContent(
+                artist = uiState.artist,
+                tracks = uiState.topTracks,
+                isRefreshing = uiState.isLoading && uiState.topTracks.isNotEmpty(),
+                error = uiState.error,
+                onRetry = { viewModel.refresh() },
+                onTrackSelected = onTrackSelected
+            )
+        }
+    }
+}
+
+@Composable
+fun PlaylistScreen(
+    playlistId: String,
+    viewModel: PlaylistDetailViewModel,
+    onTrackSelected: (String) -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(playlistId) {
+        viewModel.load(playlistId)
+    }
+
+    DetailScreenScaffold(
+        title = uiState.playlist?.name ?: "Playlist",
+        onBack = onBack
+    ) { paddingValues ->
+        DetailScreenBody(
+            paddingValues = paddingValues,
+            isLoading = uiState.isLoading && uiState.tracks.isEmpty() && uiState.playlist == null,
+            error = uiState.error,
+            hasContent = uiState.playlist != null || uiState.tracks.isNotEmpty(),
+            onRetry = { viewModel.refresh() }
+        ) {
+            PlaylistDetailContent(
+                playlist = uiState.playlist,
+                tracks = uiState.tracks,
+                isRefreshing = uiState.isLoading && uiState.tracks.isNotEmpty(),
+                error = uiState.error,
+                onRetry = { viewModel.refresh() },
+                onTrackSelected = onTrackSelected
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailScreenScaffold(
+    title: String,
+    onBack: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(title) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
+        },
+        content = content
+    )
+}
+
+@Composable
+private fun DetailScreenBody(
+    paddingValues: PaddingValues,
+    isLoading: Boolean,
+    error: String?,
+    hasContent: Boolean,
+    onRetry: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    val modifier = Modifier
+        .padding(paddingValues)
+        .fillMaxSize()
+
+    when {
+        isLoading && !hasContent -> {
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        error != null && !hasContent -> {
+            ErrorPlaceholder(
+                modifier = modifier,
+                message = error,
+                onRetry = onRetry
+            )
+        }
+
+        else -> {
+            Column(modifier = modifier) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlbumDetailContent(
+    album: Album?,
+    tracks: List<Track>,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
+    onTrackSelected: (String) -> Unit
+) {
+    DetailContentList(
+        header = {
+            album?.let {
+                DetailHeader(
+                    title = it.name,
+                    subtitle = it.artists.joinToString { artist -> artist.name },
+                    metadata = listOfNotNull(
+                        it.releaseDate,
+                        it.totalTracks?.let { total -> "$total tracks" }
+                    ).takeIf { meta -> meta.isNotEmpty() }?.joinToString(separator = " • "),
+                    imageUrl = it.images.firstOrNull()?.url
+                )
+            }
+        },
+        sectionTitle = "Tracks",
+        emptyMessage = "No tracks available for this album.",
+        tracks = tracks,
+        isRefreshing = isRefreshing,
+        error = error,
+        onRetry = onRetry,
+        onTrackSelected = onTrackSelected
+    )
+}
+
+@Composable
+private fun ArtistDetailContent(
+    artist: Artist?,
+    tracks: List<Track>,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
+    onTrackSelected: (String) -> Unit
+) {
+    DetailContentList(
+        header = {
+            artist?.let {
+                DetailHeader(
+                    title = it.name,
+                    subtitle = it.genres.takeIf { genres -> genres.isNotEmpty() }?.joinToString(),
+                    metadata = it.followers?.let { followers -> "${followers} followers" },
+                    imageUrl = it.images.firstOrNull()?.url
+                )
+            }
+        },
+        sectionTitle = "Top Tracks",
+        emptyMessage = "Top tracks for this artist could not be loaded.",
+        tracks = tracks,
+        isRefreshing = isRefreshing,
+        error = error,
+        onRetry = onRetry,
+        onTrackSelected = onTrackSelected
+    )
+}
+
+@Composable
+private fun PlaylistDetailContent(
+    playlist: Playlist?,
+    tracks: List<Track>,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
+    onTrackSelected: (String) -> Unit
+) {
+    DetailContentList(
+        header = {
+            playlist?.let {
+                DetailHeader(
+                    title = it.name,
+                    subtitle = it.description,
+                    metadata = listOfNotNull(
+                        it.owner?.displayName,
+                        it.tracks?.total?.let { total -> "$total tracks" }
+                    ).takeIf { meta -> meta.isNotEmpty() }?.joinToString(separator = " • "),
+                    imageUrl = it.images.firstOrNull()?.url
+                )
+            }
+        },
+        sectionTitle = "Tracks",
+        emptyMessage = "This playlist does not have tracks we can display right now.",
+        tracks = tracks,
+        isRefreshing = isRefreshing,
+        error = error,
+        onRetry = onRetry,
+        onTrackSelected = onTrackSelected
+    )
+}
+
+@Composable
+private fun DetailContentList(
+    header: (@Composable () -> Unit)?,
+    sectionTitle: String,
+    emptyMessage: String,
+    tracks: List<Track>,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
+    onTrackSelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isRefreshing) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            header?.let {
+                item { it() }
+            }
+
+            error?.let { message ->
+                item {
+                    ErrorBanner(
+                        message = message,
+                        onRetry = onRetry
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    text = sectionTitle,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            if (tracks.isEmpty()) {
+                item {
+                    Text(
+                        text = emptyMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                items(tracks) { track ->
+                    TrackItem(
+                        track = track,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onTrackSelected(track.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailHeader(
+    title: String,
+    subtitle: String?,
+    metadata: String?,
+    imageUrl: String?
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ImageLoader(
+            imageUrl = imageUrl,
+            contentDescription = title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall
+            )
+            subtitle?.takeIf { it.isNotBlank() }?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            metadata?.takeIf { it.isNotBlank() }?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorBanner(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Something went wrong",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorPlaceholder(
+    modifier: Modifier,
+    message: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(0.8f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Something went wrong",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailPlaceholderScreen(
+    title: String,
+    message: String,
+    description: String,
+    onBack: () -> Unit
+) {
+    DetailScreenScaffold(
+        title = title,
+        onBack = onBack
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
