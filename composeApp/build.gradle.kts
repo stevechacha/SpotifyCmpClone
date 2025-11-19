@@ -47,17 +47,19 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.android)
             implementation(libs.koin.android)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
-            implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
+            implementation(libs.jetbrains.kotlinx.browser)
         }
-        jvmMain.dependencies {
-            implementation(libs.ktor.client.cio)
-        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -83,23 +85,25 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.zoomimage.compose.coil)
             implementation(libs.kotlinx.datetime)
-
-
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)
-            implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
+            implementation(libs.jetbrains.kotlinx.browser)
         }
 
         webMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-browser:0.5.0")
+            implementation(libs.jetbrains.kotlinx.browser)
         }
     }
 }

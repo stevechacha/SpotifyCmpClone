@@ -13,13 +13,13 @@ import coil3.request.crossfade
 import coil3.size.Precision
 
 /**
- * [RijksmuseumImage] displays an image from a URL.
+ * [SpotifyImage] displays an image from a URL.
  * @param modifier Modifier to be applied to the image.
  * @param imageUrl URL of the image to be displayed.
  * @param contentDescription Description of the image for accessibility.
  */
 @Composable
-fun RijksmuseumImage(
+fun SpotifyImage(
     modifier: Modifier = Modifier,
     imageUrl: String,
     contentDescription: String? = null,
