@@ -9,7 +9,7 @@ import org.w3c.dom.Element
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-   val clientId: String = "76a675416313462c92babb568e064676"
+   val clientId: String = "76a675416313462c92babb568e064691"
    val clientSecret: String = "25cb1fc758d14074be471a1c3cb45349"
    val redirectUri: String = "http://localhost:3000/callback"
     PlatformSpotifyCredentials.set(

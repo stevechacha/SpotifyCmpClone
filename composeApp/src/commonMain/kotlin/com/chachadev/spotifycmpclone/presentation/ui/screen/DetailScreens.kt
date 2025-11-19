@@ -43,18 +43,39 @@ import com.chachadev.spotifycmpclone.presentation.ui.component.TrackItem
 import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 
 @Composable
 fun TrackScreen(
     trackId: String,
+    viewModel: TrackDetailViewModel,
     onBack: () -> Unit = {}
 ) {
-    DetailPlaceholderScreen(
-        title = "Track",
-        message = "Track ID: $trackId",
-        description = "Detailed track information will be added soon.",
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(trackId) {
+        viewModel.load(trackId)
+    }
+
+    DetailScreenScaffold(
+        title = uiState.track?.name ?: "Track",
         onBack = onBack
-    )
+    ) { paddingValues ->
+        DetailScreenBody(
+            paddingValues = paddingValues,
+            isLoading = uiState.isLoading && uiState.track == null,
+            error = uiState.error,
+            hasContent = uiState.track != null,
+            onRetry = { viewModel.refresh() }
+        ) {
+            TrackDetailContent(
+                track = uiState.track,
+                isRefreshing = uiState.isLoading && uiState.track != null,
+                error = uiState.error,
+                onRetry = { viewModel.refresh() }
+            )
+        }
+    }
 }
 
 @Composable
@@ -391,6 +412,147 @@ private fun DetailContentList(
             }
         }
     }
+}
+
+@Composable
+private fun TrackDetailContent(
+    track: Track?,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit
+) {
+    if (track == null) return
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isRefreshing) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                DetailHeader(
+                    title = track.name,
+                    subtitle = track.artists.joinToString { it.name },
+                    metadata = listOfNotNull(
+                        formatDuration(track.durationMs),
+                        track.album?.name
+                    ).takeIf { it.isNotEmpty() }?.joinToString(" • "),
+                    imageUrl = track.images.firstOrNull()?.url ?: track.album?.images?.firstOrNull()?.url
+                )
+            }
+
+            error?.let { message ->
+                item {
+                    ErrorBanner(
+                        message = message,
+                        onRetry = onRetry
+                    )
+                }
+            }
+
+            item {
+                TrackInfoCard(track = track)
+            }
+
+            track.album?.let { album ->
+                item {
+                    AlbumSummaryCard(album = album)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrackInfoCard(track: Track) {
+    Card {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Track details",
+                style = MaterialTheme.typography.titleMedium
+            )
+            InfoRow(label = "Duration", value = formatDuration(track.durationMs))
+            track.album?.name?.let {
+                InfoRow(label = "Album", value = it)
+            }
+            track.previewUrl?.let {
+                InfoRow(label = "Preview URL", value = it)
+            }
+            track.externalUrls?.spotify?.let {
+                InfoRow(label = "Spotify Link", value = it)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlbumSummaryCard(album: Album) {
+    Card {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Album",
+                style = MaterialTheme.typography.titleMedium
+            )
+            ImageLoader(
+                imageUrl = album.images.firstOrNull()?.url,
+                contentDescription = album.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = album.name,
+                style = MaterialTheme.typography.titleSmall
+            )
+            Text(
+                text = album.artists.joinToString { it.name },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+private fun formatDuration(ms: Int): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    val secondsPart = seconds.toString().padStart(2, '0')
+    return "${minutes}:${secondsPart}"
 }
 
 @Composable

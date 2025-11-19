@@ -14,6 +14,7 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewMode
 import com.chachadev.spotifycmpclone.presentation.viewmodel.HomeViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import kotlinx.serialization.Serializable
 
 sealed class Screen {
@@ -34,6 +35,7 @@ fun AppNavigation(
     albumDetailViewModel: AlbumDetailViewModel,
     playlistDetailViewModel: PlaylistDetailViewModel,
     artistDetailViewModel: ArtistDetailViewModel,
+    trackDetailViewModel: TrackDetailViewModel,
     currentScreen: Screen = Screen.Home,
     onNavigate: (Screen) -> Unit = {}
 ) {
@@ -63,6 +65,7 @@ fun AppNavigation(
         is Screen.Track -> {
             TrackScreen(
                 trackId = currentScreen.trackId,
+                viewModel = trackDetailViewModel,
                 onBack = { onNavigate(Screen.Search) }
             )
         }

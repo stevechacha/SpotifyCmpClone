@@ -21,6 +21,7 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewMode
 import com.chachadev.spotifycmpclone.presentation.viewmodel.HomeViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
@@ -90,6 +91,7 @@ fun App() {
                     val albumDetailViewModel: AlbumDetailViewModel = koinInject()
                     val playlistDetailViewModel: PlaylistDetailViewModel = koinInject()
                     val artistDetailViewModel: ArtistDetailViewModel = koinInject()
+                    val trackDetailViewModel: TrackDetailViewModel = koinInject()
 
                     AppNavigation(
                         homeViewModel = homeViewModel,
@@ -97,6 +99,7 @@ fun App() {
                         albumDetailViewModel = albumDetailViewModel,
                         playlistDetailViewModel = playlistDetailViewModel,
                         artistDetailViewModel = artistDetailViewModel,
+                        trackDetailViewModel = trackDetailViewModel,
                         currentScreen = currentScreen,
                         onNavigate = { currentScreen = it }
                     )
