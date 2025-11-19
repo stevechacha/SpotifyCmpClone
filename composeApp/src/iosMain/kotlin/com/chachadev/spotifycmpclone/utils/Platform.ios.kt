@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone
+package com.chachadev.spotifycmpclone.utils
 
 import platform.UIKit.UIDevice
 

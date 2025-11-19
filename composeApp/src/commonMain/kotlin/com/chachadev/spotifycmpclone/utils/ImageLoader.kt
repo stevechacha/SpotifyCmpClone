@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation.ui.component
+package com.chachadev.spotifycmpclone.utils
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

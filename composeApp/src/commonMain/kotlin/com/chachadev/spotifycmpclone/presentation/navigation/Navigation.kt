@@ -13,6 +13,7 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.HomeViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import kotlinx.serialization.Serializable
@@ -36,6 +37,7 @@ fun AppNavigation(
     playlistDetailViewModel: PlaylistDetailViewModel,
     artistDetailViewModel: ArtistDetailViewModel,
     trackDetailViewModel: TrackDetailViewModel,
+    profileViewModel: ProfileViewModel,
     currentScreen: Screen = Screen.Home,
     onNavigate: (Screen) -> Unit = {}
 ) {
@@ -60,7 +62,7 @@ fun AppNavigation(
             LibraryScreen()
         }
         is Screen.Profile -> {
-            ProfileScreen()
+            ProfileScreen(viewModel = profileViewModel)
         }
         is Screen.Track -> {
             TrackScreen(

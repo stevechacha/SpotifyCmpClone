@@ -7,6 +7,7 @@ import com.chachadev.spotifycmpclone.domain.model.Artist
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.SearchResult
 import com.chachadev.spotifycmpclone.domain.model.Track
+import com.chachadev.spotifycmpclone.domain.model.User
 import com.chachadev.spotifycmpclone.domain.repository.SpotifyRepository
 
 class SpotifyRepositoryImpl(
@@ -112,6 +113,21 @@ class SpotifyRepositoryImpl(
                 accessToken = token
             )
             response.items.mapNotNull { it.track.toDomain() }
+        }
+    }
+
+    override suspend fun getCurrentUser(): Result<User> {
+        return try {
+            runWithToken { token ->
+                try {
+                    api.getCurrentUser(token).toDomain()
+                } catch (e: Exception) {
+                    // Handle serialization errors or API errors
+                    throw Exception("User profile unavailable. The current authentication method (client credentials) doesn't support user profile access. Please use OAuth 2.0 Authorization Code flow to access user profile.")
+                }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

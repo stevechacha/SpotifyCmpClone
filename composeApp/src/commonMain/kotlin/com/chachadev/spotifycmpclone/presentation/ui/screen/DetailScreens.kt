@@ -38,7 +38,8 @@ import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.Track
-import com.chachadev.spotifycmpclone.presentation.ui.component.ImageLoader
+import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
+import com.chachadev.spotifycmpclone.utils.ImageLoader
 import com.chachadev.spotifycmpclone.presentation.ui.component.TrackItem
 import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
@@ -509,7 +510,7 @@ private fun AlbumSummaryCard(album: Album) {
                 text = "Album",
                 style = MaterialTheme.typography.titleMedium
             )
-            ImageLoader(
+            CoilImage(
                 imageUrl = album.images.firstOrNull()?.url,
                 contentDescription = album.name,
                 modifier = Modifier
@@ -565,7 +566,7 @@ private fun DetailHeader(
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        ImageLoader(
+        CoilImage(
             imageUrl = imageUrl,
             contentDescription = title,
             modifier = Modifier

@@ -1,7 +1,12 @@
 package com.chachadev.spotifycmpclone.presentation.ui.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,7 +16,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.chachadev.spotifycmpclone.domain.model.Track
-import com.chachadev.spotifycmpclone.presentation.ui.component.ImageLoader
 
 @Composable
 fun TrackItem(
@@ -27,7 +31,7 @@ fun TrackItem(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ImageLoader(
+        CoilImage(
             imageUrl = track.images.firstOrNull()?.url ?: track.album?.images?.firstOrNull()?.url,
             contentDescription = track.name,
             modifier = Modifier.size(56.dp),

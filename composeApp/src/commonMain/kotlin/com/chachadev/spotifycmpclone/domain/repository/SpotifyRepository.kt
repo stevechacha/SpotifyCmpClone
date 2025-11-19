@@ -5,6 +5,7 @@ import com.chachadev.spotifycmpclone.domain.model.Artist
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.SearchResult
 import com.chachadev.spotifycmpclone.domain.model.Track
+import com.chachadev.spotifycmpclone.domain.model.User
 
 interface SpotifyRepository {
     suspend fun search(query: String, type: String = "track,album,artist,playlist"): Result<SearchResult>
@@ -17,5 +18,6 @@ interface SpotifyRepository {
     suspend fun getArtistTopTracks(artistId: String): Result<List<Track>>
     suspend fun getAlbumTracks(albumId: String): Result<List<Track>>
     suspend fun getPlaylistTracks(playlistId: String): Result<List<Track>>
+    suspend fun getCurrentUser(): Result<User>
 }
 

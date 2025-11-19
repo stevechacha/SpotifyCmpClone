@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation.ui.component
+package com.chachadev.spotifycmpclone.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap

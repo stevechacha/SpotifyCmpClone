@@ -6,6 +6,7 @@ import com.chachadev.spotifycmpclone.data.dto.NewReleasesDto
 import com.chachadev.spotifycmpclone.data.dto.PlaylistDto
 import com.chachadev.spotifycmpclone.data.dto.SearchResultDto
 import com.chachadev.spotifycmpclone.data.dto.TrackDto
+import com.chachadev.spotifycmpclone.data.dto.UserDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -117,6 +118,14 @@ class SpotifyApi(
         accessToken: String
     ): PlaylistTracksResponseDto {
         return client.get("$baseUrl/playlists/$playlistId/tracks") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+        }.body()
+    }
+
+    suspend fun getCurrentUser(
+        accessToken: String
+    ): UserDto {
+        return client.get("$baseUrl/me") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
         }.body()
     }

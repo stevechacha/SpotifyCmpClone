@@ -12,7 +12,8 @@ val apiModule = module {
         AuthManager(
             httpClient = get(),
             clientId = getProperty("spotify_client_id", ""),
-            clientSecret = getProperty("spotify_client_secret", "")
+            clientSecret = getProperty("spotify_client_secret", ""),
+            redirectUri = getProperty("spotify_redirect_uri", "")
         )
     }
 

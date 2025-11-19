@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone
+package com.chachadev.spotifycmpclone.utils
 
 class JsPlatform: Platform {
     override val name: String = "Web with Kotlin/JS"

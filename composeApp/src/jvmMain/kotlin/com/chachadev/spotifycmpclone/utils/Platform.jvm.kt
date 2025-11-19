@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone
+package com.chachadev.spotifycmpclone.utils
 
 class JVMPlatform: Platform {
     override val name: String = "Java ${System.getProperty("java.version")}"
