@@ -2,6 +2,16 @@ package com.chachadev.spotifycmpclone.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
@@ -13,10 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,9 +47,9 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.PlaylistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.ProfileScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.TrackScreen
+import com.chachadev.spotifycmpclone.utils.DeviceConfiguration
 import com.chachadev.spotifycmpclone.utils.createNoSpacingPaneScaffoldDirective
 import com.chachadev.spotifycmpclone.utils.currentDeviceConfiguration
-import com.chachadev.spotifycmpclone.utils.DeviceConfiguration
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
@@ -57,15 +71,21 @@ fun SpotifyCmpCloneAdaptiveLayout(){
     
     val isDetailFlowActive = remember(detailBackStackEntry) {
         // Check if we have a detail screen active (not the empty detail screen)
+        // Check route string to see if we're at EmptyDetailScreenDestination
+        // Since graph might not be initialized yet, we check the route directly
         detailBackStackEntry?.destination?.route?.let { route ->
-            !route.contains("EmptyDetailScreenDestination", ignoreCase = true)
+            !route.contains("EmptyDetailScreenDestination", ignoreCase = true) &&
+            route.isNotEmpty()
         } ?: false
     }
     
     val isTrackFlowActive = remember(trackBackStackEntry) {
         // Check if we have a track screen active
+        // Check route string to see if we're at EmptyDetailScreenDestination
+        // Since graph might not be initialized yet, we check the route directly
         trackBackStackEntry?.destination?.route?.let { route ->
-            !route.contains("EmptyDetailScreenDestination", ignoreCase = true)
+            !route.contains("EmptyDetailScreenDestination", ignoreCase = true) &&
+            route.isNotEmpty()
         } ?: false
     }
     
@@ -82,7 +102,8 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         }
     }
 
-    LaunchedEffect(isDetailFlowActive, isTrackFlowActive, scaffoldNavigator.currentDestination, isWideScreen) {
+    // Track detail pane state to ensure proper navigation
+    LaunchedEffect(isDetailFlowActive, isTrackFlowActive, isWideScreen, deviceConfiguration) {
         val currentPaneRole = scaffoldNavigator.currentDestination?.pane
 
         // On wide screens (desktop): show 3 panes when all are active
@@ -90,11 +111,11 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         val targetPaneRole = if (isWideScreen && deviceConfiguration == DeviceConfiguration.DESKTOP) {
             // On desktop, if track is active, focus on track (all 3 panes visible)
             // If detail is active (but no track), focus on detail (2 panes visible)
-            // If neither, focus on list (1 pane visible)
+            // If neither, focus on list (list pane visible, detail pane hidden/empty)
             when {
                 isTrackFlowActive -> ThreePaneScaffoldRole.Tertiary // Track (all 3 panes visible)
                 isDetailFlowActive -> ThreePaneScaffoldRole.Primary // Detail (list + detail visible)
-                else -> ThreePaneScaffoldRole.Secondary // List
+                else -> ThreePaneScaffoldRole.Secondary // List (only list visible)
             }
         } else {
             // On mobile/tablet, navigate between panes (only one visible)
@@ -105,7 +126,9 @@ fun SpotifyCmpCloneAdaptiveLayout(){
             }
         }
 
-        if (currentPaneRole != targetPaneRole) {
+        // Always navigate to target pane to ensure correct state
+        // This ensures when detail becomes empty, we navigate back to list
+        scope.launch {
             scaffoldNavigator.navigateTo(targetPaneRole)
         }
     }
@@ -133,7 +156,7 @@ fun SpotifyCmpCloneAdaptiveLayout(){
                     // On mobile, navigate back to list pane
                     detailNavController.navigate(Screen.App.EmptyDetailScreenDestination) {
                         popUpTo(detailNavController.graph.findStartDestination().id) { inclusive = true }
-                        launchSingleTop = true
+                    launchSingleTop = true
                     }
                     // On mobile, also navigate back to list pane
                     if (isMobile && scaffoldNavigator.currentDestination?.pane == ThreePaneScaffoldRole.Primary) {
@@ -213,16 +236,55 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         paneScaffoldDirective = scaffoldDirective
     ) {*/
 
+    val navigationItems = remember {
+        listOf(
+            NavigationItem("Home", Icons.Default.Home, Screen.App.DashBoard.Home),
+            NavigationItem("Search", Icons.Default.Search, Screen.App.DashBoard.Search),
+            NavigationItem("Library", Icons.Default.LibraryMusic, Screen.App.DashBoard.Library),
+            NavigationItem("Profile", Icons.Default.Person, Screen.App.DashBoard.Profile)
+        )
+    }
+
+    val currentDestination by rememberSaveable { mutableStateOf(trackNavController.currentDestination?.route) }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.App.DashBoard.Home) }
+
+
+
+
     // NavigationSuiteScaffold with empty items - can be expanded later
     NavigationSuiteScaffold(
         navigationItems = {
+            NavigationBar {
+                navigationItems.forEach { destination ->
+                    val isSelected = when (destination.screen) {
+                        Screen.App.DashBoard.Home -> currentScreen is Screen.App.DashBoard.Home
+                        Screen.App.DashBoard.Search -> currentScreen is Screen.App.DashBoard.Search ||
+                                currentScreen is Screen.App.Track ||
+                                currentScreen is Screen.App.Album ||
+                                currentScreen is Screen.App.Artist ||
+                                currentScreen is Screen.App.Playlist
+
+                        Screen.App.DashBoard.Library -> currentScreen is Screen.App.DashBoard.Library
+                        Screen.App.DashBoard.Profile -> currentScreen is Screen.App.DashBoard.Profile
+                        else -> false
+                    }
+                    NavigationBarItem(
+                        icon = { Icon(destination.icon, contentDescription = destination.label) },
+                        label = { Text(destination.label) },
+                        selected = isSelected,
+                        onClick = { currentScreen = destination.screen }
+                    )
+                }
+            }
             // Navigation items can be added here when needed
         },
+
     ) {
         ListDetailPaneScaffold(
             directive = scaffoldDirective,
             value = scaffoldNavigator.scaffoldValue,
             listPane = {
+                if (isMobile)
                 ListContent(
                     navController = listNavController,
                     onNavigateToDetail = { destination ->
@@ -239,17 +301,26 @@ fun SpotifyCmpCloneAdaptiveLayout(){
                 DetailPaneNavHost(
                     navController = detailNavController,
                     trackNavController = trackNavController,
+                    listNavController = listNavController,
                     onTrackSelected = { trackId ->
                         // Navigate to track detail in the extra pane
                         trackNavController.navigate(Screen.App.Track(trackId)) {
                             launchSingleTop = true
                         }
-                        // On desktop, ensure the scaffold navigates to Extra pane to show the track
+                        // On desktop, ensure the scaffold navigates to Tertiary pane to show the track
                         if (isWideScreen && deviceConfiguration == DeviceConfiguration.DESKTOP) {
                             scope.launch {
                                 scaffoldNavigator.navigateTo(ThreePaneScaffoldRole.Tertiary)
                             }
                         }
+                    },
+                    onNavigateToDetail = { destination ->
+                        detailNavController.navigate(destination) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onCurrentScreenChange = { screen ->
+                        currentListScreen = screen
                     }
                 )
             },
@@ -326,7 +397,10 @@ fun ListContent(
 fun DetailPaneNavHost(
     navController: NavHostController,
     trackNavController: NavHostController,
-    onTrackSelected: (String) -> Unit
+    listNavController: NavHostController,
+    onTrackSelected: (String) -> Unit,
+    onNavigateToDetail: (Screen) -> Unit,
+    onCurrentScreenChange: (Screen) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -334,9 +408,14 @@ fun DetailPaneNavHost(
         modifier = Modifier.fillMaxSize()
     ) {
         composable<Screen.App.EmptyDetailScreenDestination> {
-            // Empty detail screen - shows nothing when no detail is selected
-            Box(
-                modifier = Modifier.fillMaxSize()
+            // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
+            HomeScreen(
+                onAlbumClick = { albumId ->
+                    onNavigateToDetail(Screen.App.Album(albumId))
+                },
+                onPlaylistClick = { playlistId ->
+                    onNavigateToDetail(Screen.App.Playlist(playlistId))
+                }
             )
         }
         composable<Screen.App.Album> { backStackEntry ->
@@ -345,7 +424,12 @@ fun DetailPaneNavHost(
                 albumId = album.albumId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {
-                    navController.popBackStack()
+                    // Navigate detail pane to empty screen
+                    // Also navigate list pane back to Home if needed
+                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
+                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -355,7 +439,12 @@ fun DetailPaneNavHost(
                 artistId = artist.artistId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {
-                    navController.popBackStack()
+                    // Navigate detail pane to empty screen
+                    // Also navigate list pane back to Home
+                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
+                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -365,7 +454,12 @@ fun DetailPaneNavHost(
                 playlistId = playlist.playlistId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {
-                    navController.popBackStack()
+                    // Navigate detail pane to empty screen
+                    // Also navigate list pane back to Home
+                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
+                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -388,6 +482,7 @@ fun DetailPaneNavHost(
     }
 }
 
+
 @Composable
 fun TrackDetailPaneNavHost(
     navController: NavHostController
@@ -397,11 +492,17 @@ fun TrackDetailPaneNavHost(
         startDestination = Screen.App.EmptyDetailScreenDestination,
         modifier = Modifier.fillMaxSize()
     ) {
-        composable<Screen.App.EmptyDetailScreenDestination> {
+        // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
+
+        composable<Screen.App.EmptyDetailScreenDestination> { backStackEntry ->
+            val track = backStackEntry.toRoute<Screen.App.EmptyDetailScreenDestination>()
+
             // Empty track detail screen
             Box(
                 modifier = Modifier.fillMaxSize()
-            )
+            ){
+                Text("Empty Screee", textAlign = TextAlign.Center, fontSize = 56.sp)
+            }
         }
         composable<Screen.App.Track> { backStackEntry ->
             val track = backStackEntry.toRoute<Screen.App.Track>()
@@ -417,3 +518,9 @@ fun TrackDetailPaneNavHost(
         }
     }
 }
+
+private data class NavigationItem(
+    val label: String,
+    val icon: ImageVector,
+    val screen: Screen
+)
