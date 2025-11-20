@@ -157,12 +157,14 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         paneScaffoldDirective = scaffoldDirective
     ) {*/
 
+    // NavigationSuiteScaffold with empty items - can be expanded later
     NavigationSuiteScaffold(
-        navigationItems = {}
-
+        navigationItems = {
+            // Navigation items can be added here when needed
+        },
     ) {
         ListDetailPaneScaffold(
-            directive = scaffoldNavigator.scaffoldDirective,
+            directive = scaffoldDirective,
             value = scaffoldNavigator.scaffoldValue,
             listPane = {
                 ListContent(

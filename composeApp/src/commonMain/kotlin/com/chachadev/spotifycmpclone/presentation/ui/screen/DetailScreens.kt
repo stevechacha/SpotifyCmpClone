@@ -47,150 +47,13 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewMo
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-@Composable
-fun TrackScreen(
-    trackId: String,
-    viewModel: TrackDetailViewModel = koinViewModel(),
-    onBack: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(trackId) {
-        viewModel.load(trackId)
-    }
 
-    DetailScreenScaffold(
-        title = uiState.track?.name ?: "Track",
-        onBack = onBack
-    ) { paddingValues ->
-        DetailScreenBody(
-            paddingValues = paddingValues,
-            isLoading = uiState.isLoading && uiState.track == null,
-            error = uiState.error,
-            hasContent = uiState.track != null,
-            onRetry = { viewModel.refresh() }
-        ) {
-            TrackDetailContent(
-                track = uiState.track,
-                isRefreshing = uiState.isLoading && uiState.track != null,
-                error = uiState.error,
-                onRetry = { viewModel.refresh() }
-            )
-        }
-    }
-}
 
-@Composable
-fun AlbumScreen(
-    albumId: String,
-    viewModel: AlbumDetailViewModel = koinViewModel(),
-    onTrackSelected: (String) -> Unit = {},
-    onBack: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(albumId) {
-        viewModel.load(albumId)
-    }
-
-    DetailScreenScaffold(
-        title = uiState.album?.name ?: "Album",
-        onBack = onBack
-    ) { paddingValues ->
-        DetailScreenBody(
-            paddingValues = paddingValues,
-            isLoading = uiState.isLoading && uiState.tracks.isEmpty() && uiState.album == null,
-            error = uiState.error,
-            hasContent = uiState.album != null || uiState.tracks.isNotEmpty(),
-            onRetry = { viewModel.refresh() }
-        ) {
-            AlbumDetailContent(
-                album = uiState.album,
-                tracks = uiState.tracks,
-                isRefreshing = uiState.isLoading && uiState.tracks.isNotEmpty(),
-                error = uiState.error,
-                onRetry = { viewModel.refresh() },
-                onTrackSelected = onTrackSelected
-            )
-        }
-    }
-}
-
-@Composable
-fun ArtistScreen(
-    artistId: String,
-    viewModel: ArtistDetailViewModel = koinViewModel(),
-    onTrackSelected: (String) -> Unit = {},
-    onBack: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(artistId) {
-        viewModel.load(artistId)
-    }
-
-    DetailScreenScaffold(
-        title = uiState.artist?.name ?: "Artist",
-        onBack = onBack
-    ) { paddingValues ->
-        DetailScreenBody(
-            paddingValues = paddingValues,
-            isLoading = uiState.isLoading && uiState.topTracks.isEmpty() && uiState.artist == null,
-            error = uiState.error,
-            hasContent = uiState.artist != null || uiState.topTracks.isNotEmpty(),
-            onRetry = { viewModel.refresh() }
-        ) {
-            ArtistDetailContent(
-                artist = uiState.artist,
-                tracks = uiState.topTracks,
-                isRefreshing = uiState.isLoading && uiState.topTracks.isNotEmpty(),
-                error = uiState.error,
-                onRetry = { viewModel.refresh() },
-                onTrackSelected = onTrackSelected
-            )
-        }
-    }
-}
-
-@Composable
-fun PlaylistScreen(
-    playlistId: String,
-    viewModel: PlaylistDetailViewModel = koinViewModel(),
-    onTrackSelected: (String) -> Unit = {},
-    onBack: () -> Unit = {}
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(playlistId) {
-        viewModel.load(playlistId)
-    }
-
-    DetailScreenScaffold(
-        title = uiState.playlist?.name ?: "Playlist",
-        onBack = onBack
-    ) { paddingValues ->
-        DetailScreenBody(
-            paddingValues = paddingValues,
-            isLoading = uiState.isLoading && uiState.tracks.isEmpty() && uiState.playlist == null,
-            error = uiState.error,
-            hasContent = uiState.playlist != null || uiState.tracks.isNotEmpty(),
-            onRetry = { viewModel.refresh() }
-        ) {
-            PlaylistDetailContent(
-                playlist = uiState.playlist,
-                tracks = uiState.tracks,
-                isRefreshing = uiState.isLoading && uiState.tracks.isNotEmpty(),
-                error = uiState.error,
-                onRetry = { viewModel.refresh() },
-                onTrackSelected = onTrackSelected
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DetailScreenScaffold(
+fun DetailScreenScaffold(
     title: String,
     onBack: () -> Unit,
     content: @Composable (PaddingValues) -> Unit
@@ -214,7 +77,7 @@ private fun DetailScreenScaffold(
 }
 
 @Composable
-private fun DetailScreenBody(
+fun DetailScreenBody(
     paddingValues: PaddingValues,
     isLoading: Boolean,
     error: String?,
@@ -253,7 +116,7 @@ private fun DetailScreenBody(
 }
 
 @Composable
-private fun AlbumDetailContent(
+fun AlbumDetailContent(
     album: Album?,
     tracks: List<Track>,
     isRefreshing: Boolean,
@@ -286,7 +149,7 @@ private fun AlbumDetailContent(
 }
 
 @Composable
-private fun ArtistDetailContent(
+fun ArtistDetailContent(
     artist: Artist?,
     tracks: List<Track>,
     isRefreshing: Boolean,
@@ -316,7 +179,7 @@ private fun ArtistDetailContent(
 }
 
 @Composable
-private fun PlaylistDetailContent(
+fun PlaylistDetailContent(
     playlist: Playlist?,
     tracks: List<Track>,
     isRefreshing: Boolean,
@@ -417,7 +280,7 @@ private fun DetailContentList(
 }
 
 @Composable
-private fun TrackDetailContent(
+fun TrackDetailContent(
     track: Track?,
     isRefreshing: Boolean,
     error: String?,
