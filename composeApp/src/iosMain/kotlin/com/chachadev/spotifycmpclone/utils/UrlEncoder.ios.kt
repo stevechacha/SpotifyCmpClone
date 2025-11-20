@@ -10,3 +10,5 @@ actual fun encodeUrlComponent(component: String): String {
     return nsString.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters) ?: component
 }
 
+
+

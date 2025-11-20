@@ -1,32 +1,25 @@
 package com.chachadev.spotifycmpclone
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
-import com.chachadev.spotifycmpclone.di.SpotifyCredentials
-import com.chachadev.spotifycmpclone.di.appModule
+import androidx.navigation.compose.rememberNavController
 import com.chachadev.spotifycmpclone.data.auth.AuthManager
-import com.chachadev.spotifycmpclone.presentation.navigation.AppNavigation
+import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
+import com.chachadev.spotifycmpclone.di.appModule
+import com.chachadev.spotifycmpclone.presentation.SpotifyCmpCloneAdaptiveLayout
+import com.chachadev.spotifycmpclone.presentation.navigation.NavigationRoot
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.AuthScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.WelcomeScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.getStoredAuthCode
 import com.chachadev.spotifycmpclone.presentation.ui.theme.SpotifyTheme
-import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.HomeViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
-import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
@@ -53,15 +46,19 @@ fun App() {
             val authManager: AuthManager = koinInject()
             val isSignedIn by authManager.isSignedIn.collectAsState()
 
-            var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+            var currentScreen by remember { mutableStateOf<Screen>(Screen.App.DashBoard.Home) }
             val navigationItems = remember {
                 listOf(
-                    NavigationItem("Home", Icons.Default.Home, Screen.Home),
-                    NavigationItem("Search", Icons.Default.Search, Screen.Search),
-                    NavigationItem("Library", Icons.Default.LibraryMusic, Screen.Library),
-                    NavigationItem("Profile", Icons.Default.Person, Screen.Profile)
+                    NavigationItem("Home", Icons.Default.Home, Screen.App.DashBoard.Home),
+                    NavigationItem("Search", Icons.Default.Search, Screen.App.DashBoard.Search),
+                    NavigationItem("Library", Icons.Default.LibraryMusic, Screen.App.DashBoard.Library),
+                    NavigationItem("Profile", Icons.Default.Person, Screen.App.DashBoard.Profile)
                 )
             }
+            val navController = rememberNavController()
+//            SpotifyCmpCloneAdaptiveLayout()
+
+            NavigationRoot(navController = navController)
 
            /* if (!isSignedIn) {
                 // Show Welcome Screen if not signed in
@@ -99,7 +96,7 @@ fun App() {
                 }
             } else {*/
                 // Show main app if signed in
-                Scaffold(
+                /*Scaffold(
                     bottomBar = {
                         NavigationBar {
                             navigationItems.forEach { item ->
@@ -148,7 +145,7 @@ fun App() {
                             onNavigate = { currentScreen = it }
                         )
                     }
-                }
+                }*/
             }
 
     }

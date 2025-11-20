@@ -73,18 +73,17 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(libs.kotlinx.coroutinesCore)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.contentNegotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serializationJson)
             implementation(libs.bundles.koin.common)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.core)
+            implementation(libs.bundles.ktor.common)
+            implementation(libs.bundles.cmp.common)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
             implementation(libs.kermit)
             implementation(libs.zoomimage.compose.coil)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.material3.window.size.class1.multiplatform)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

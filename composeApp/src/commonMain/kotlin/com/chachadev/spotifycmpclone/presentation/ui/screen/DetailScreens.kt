@@ -45,11 +45,12 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TrackScreen(
     trackId: String,
-    viewModel: TrackDetailViewModel,
+    viewModel: TrackDetailViewModel = koinViewModel(),
     onBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -82,7 +83,7 @@ fun TrackScreen(
 @Composable
 fun AlbumScreen(
     albumId: String,
-    viewModel: AlbumDetailViewModel,
+    viewModel: AlbumDetailViewModel = koinViewModel(),
     onTrackSelected: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
@@ -118,7 +119,7 @@ fun AlbumScreen(
 @Composable
 fun ArtistScreen(
     artistId: String,
-    viewModel: ArtistDetailViewModel,
+    viewModel: ArtistDetailViewModel = koinViewModel(),
     onTrackSelected: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
@@ -154,7 +155,7 @@ fun ArtistScreen(
 @Composable
 fun PlaylistScreen(
     playlistId: String,
-    viewModel: PlaylistDetailViewModel,
+    viewModel: PlaylistDetailViewModel = koinViewModel(),
     onTrackSelected: (String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
