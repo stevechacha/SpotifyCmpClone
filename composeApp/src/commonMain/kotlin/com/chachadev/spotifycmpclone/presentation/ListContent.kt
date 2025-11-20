@@ -14,6 +14,7 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.LibraryScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.ProfileScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
+/*
 
 @Composable
  fun ListContent(
@@ -72,4 +73,4 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
             }
         }
     }
-}
+}*/

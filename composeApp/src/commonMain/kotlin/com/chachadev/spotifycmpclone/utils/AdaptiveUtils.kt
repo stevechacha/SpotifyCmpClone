@@ -59,8 +59,8 @@ fun createNoSpacingPaneScaffoldDirective(): PaneScaffoldDirective {
         DeviceConfiguration.MOBILE_PORTRAIT,
         DeviceConfiguration.MOBILE_LANDSCAPE,
         DeviceConfiguration.TABLET_PORTRAIT -> 1
-        DeviceConfiguration.TABLET_LANDSCAPE,
-        DeviceConfiguration.DESKTOP -> 2
+        DeviceConfiguration.TABLET_LANDSCAPE -> 2
+        DeviceConfiguration.DESKTOP -> 3 // Support 3 panes on desktop: List, Detail, Track
     }
 
     val verticalPartitionSpacerSize: Dp
