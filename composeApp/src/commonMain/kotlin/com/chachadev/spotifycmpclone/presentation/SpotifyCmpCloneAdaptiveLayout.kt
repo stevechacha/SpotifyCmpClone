@@ -1,17 +1,26 @@
 package com.chachadev.spotifycmpclone.presentation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
@@ -23,30 +32,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.AlbumScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.ArtistScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.LibraryScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.PlaylistScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.ProfileScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.TrackScreen
 import com.chachadev.spotifycmpclone.utils.DeviceConfiguration
 import com.chachadev.spotifycmpclone.utils.createNoSpacingPaneScaffoldDirective
 import com.chachadev.spotifycmpclone.utils.currentDeviceConfiguration
@@ -54,7 +51,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SpotifyCmpCloneAdaptiveLayout(){
+fun SpotifyCmpCloneAdaptiveLayout() = Column{
     val listNavController = rememberNavController() // For the list pane's content (Home, Search, etc.)
     val detailNavController = rememberNavController() // For the detail pane's content (Album, Playlist, Artist)
     val trackNavController = rememberNavController() // For the track detail pane (third pane)
@@ -133,7 +130,7 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         }
     }
 
-    BackHandler(enabled = (isMobile && scaffoldNavigator.canNavigateBack()) || isDetailFlowActive || isTrackFlowActive) {
+    BackHandler(enabled = (isMobile || scaffoldNavigator.canNavigateBack()) || isDetailFlowActive || isTrackFlowActive) {
         when {
             isTrackFlowActive -> {
                 // Handle track pane back navigation
@@ -174,68 +171,6 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         // On wide screens, if no detail/track is active, system handles back (might close app)
     }
 
-    /*NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            navigationSuiteItem(
-                icon = Icons.Default.Home,
-                label = "Home",
-                selected = currentListScreen is Screen.App.DashBoard.Home,
-                onClick = {
-                    currentListScreen = Screen.App.DashBoard.Home
-                    listNavController.navigate(Screen.App.DashBoard.Home) {
-                        popUpTo(listNavController.graph.findStartDestination().id) {
-                            inclusive = false
-                        }
-                        launchSingleTop = true
-                    }
-                }
-            )
-            navigationSuiteItem(
-                icon = Icons.Default.Search,
-                label = "Search",
-                selected = currentListScreen is Screen.App.DashBoard.Search,
-                onClick = {
-                    currentListScreen = Screen.App.DashBoard.Search
-                    listNavController.navigate(Screen.App.DashBoard.Search) {
-                        popUpTo(listNavController.graph.findStartDestination().id) {
-                            inclusive = false
-                        }
-                        launchSingleTop = true
-                    }
-                }
-            )
-            navigationSuiteItem(
-                icon = Icons.Default.LibraryMusic,
-                label = "Library",
-                selected = currentListScreen is Screen.App.DashBoard.Library,
-                onClick = {
-                    currentListScreen = Screen.App.DashBoard.Library
-                    listNavController.navigate(Screen.App.DashBoard.Library) {
-                        popUpTo(listNavController.graph.findStartDestination().id) {
-                            inclusive = false
-                        }
-                        launchSingleTop = true
-                    }
-                }
-            )
-            navigationSuiteItem(
-                icon = Icons.Default.Person,
-                label = "Profile",
-                selected = currentListScreen is Screen.App.DashBoard.Profile,
-                onClick = {
-                    currentListScreen = Screen.App.DashBoard.Profile
-                    listNavController.navigate(Screen.App.DashBoard.Profile) {
-                        popUpTo(listNavController.graph.findStartDestination().id) {
-                            inclusive = false
-                        }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        },
-        paneScaffoldDirective = scaffoldDirective
-    ) {*/
-
     val navigationItems = remember {
         listOf(
             NavigationItem("Home", Icons.Default.Home, Screen.App.DashBoard.Home),
@@ -245,8 +180,18 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         )
     }
 
-    val currentDestination by rememberSaveable { mutableStateOf(trackNavController.currentDestination?.route) }
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.App.DashBoard.Home) }
+    val shouldShowNavigationBar = !isDetailFlowActive && !isTrackFlowActive
+
+    if (isMobile){
+        Text(
+            "hellow World",
+            fontSize = 56.sp
+        )
+    }
+
+
+
+
 
 
 
@@ -254,31 +199,65 @@ fun SpotifyCmpCloneAdaptiveLayout(){
     // NavigationSuiteScaffold with empty items - can be expanded later
     NavigationSuiteScaffold(
         navigationItems = {
-            NavigationBar {
-                navigationItems.forEach { destination ->
-                    val isSelected = when (destination.screen) {
-                        Screen.App.DashBoard.Home -> currentScreen is Screen.App.DashBoard.Home
-                        Screen.App.DashBoard.Search -> currentScreen is Screen.App.DashBoard.Search ||
-                                currentScreen is Screen.App.Track ||
-                                currentScreen is Screen.App.Album ||
-                                currentScreen is Screen.App.Artist ||
-                                currentScreen is Screen.App.Playlist
-
-                        Screen.App.DashBoard.Library -> currentScreen is Screen.App.DashBoard.Library
-                        Screen.App.DashBoard.Profile -> currentScreen is Screen.App.DashBoard.Profile
-                        else -> false
+            if (shouldShowNavigationBar && isMobile) {
+                NavigationBar {
+                    navigationItems.forEach { destination ->
+                        val isSelected = when (destination.screen) {
+                            Screen.App.DashBoard.Home -> currentListScreen is Screen.App.DashBoard.Home
+                            Screen.App.DashBoard.Search -> currentListScreen is Screen.App.DashBoard.Search
+                            Screen.App.DashBoard.Library -> currentListScreen is Screen.App.DashBoard.Library
+                            Screen.App.DashBoard.Profile -> currentListScreen is Screen.App.DashBoard.Profile
+                            else -> false
+                        }
+                        NavigationBarItem(
+                            icon = { Icon(destination.icon, contentDescription = destination.label) },
+                            label = { Text(destination.label) },
+                            selected = isSelected,
+                            onClick = {
+                                if (currentListScreen != destination.screen) {
+                                    currentListScreen = destination.screen
+                                    when (destination.screen) {
+                                        Screen.App.DashBoard.Home -> {
+                                            listNavController.navigate(Screen.App.DashBoard.Home) {
+                                                popUpTo(listNavController.graph.findStartDestination().id) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        Screen.App.DashBoard.Search -> {
+                                            listNavController.navigate(Screen.App.DashBoard.Search) {
+                                                popUpTo(listNavController.graph.findStartDestination().id) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        Screen.App.DashBoard.Library -> {
+                                            listNavController.navigate(Screen.App.DashBoard.Library) {
+                                                popUpTo(listNavController.graph.findStartDestination().id) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        Screen.App.DashBoard.Profile -> {
+                                            listNavController.navigate(Screen.App.DashBoard.Profile) {
+                                                popUpTo(listNavController.graph.findStartDestination().id) {
+                                                    inclusive = false
+                                                }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        else -> Unit
+                                    }
+                                }
+                            }
+                        )
                     }
-                    NavigationBarItem(
-                        icon = { Icon(destination.icon, contentDescription = destination.label) },
-                        label = { Text(destination.label) },
-                        selected = isSelected,
-                        onClick = { currentScreen = destination.screen }
-                    )
                 }
             }
-            // Navigation items can be added here when needed
         },
-
     ) {
         ListDetailPaneScaffold(
             directive = scaffoldDirective,
@@ -296,6 +275,7 @@ fun SpotifyCmpCloneAdaptiveLayout(){
                         currentListScreen = screen
                     }
                 )
+                else DesktopLibrary()
             },
             detailPane = {
                 DetailPaneNavHost(
@@ -333,191 +313,344 @@ fun SpotifyCmpCloneAdaptiveLayout(){
         )
     }
 }
-
+/*
 @Composable
-fun ListContent(
-    navController: NavHostController,
-    onNavigateToDetail: (Screen) -> Unit,
-    onCurrentScreenChange: (Screen) -> Unit
+fun DesktopLibrary(
+    onAlbumClick: (String) -> Unit = {},
+    onPlaylistClick: (String) -> Unit = {},
+    onArtistClick: (String) -> Unit = {}
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.App.DashBoard.Home,
+    var selectedFilter by remember { mutableStateOf(LibraryFilter.Playlists) }
+    var searchQuery by remember { mutableStateOf("") }
+    var sortOption by remember { mutableStateOf(SortOption.Recents) }
+    
+    // Mock data - replace with actual ViewModel/Repository calls
+    val playlists = remember { emptyList<com.chachadev.spotifycmpclone.domain.model.Playlist>() }
+    val albums = remember { emptyList<com.chachadev.spotifycmpclone.domain.model.Album>() }
+    val artists = remember { emptyList<com.chachadev.spotifycmpclone.domain.model.Artist>() }
+    
+    Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        composable<Screen.App.DashBoard.Home> {
-            HomeScreen(
-                onAlbumClick = { albumId ->
-                    onNavigateToDetail(Screen.App.Album(albumId))
-                },
-                onPlaylistClick = { playlistId ->
-                    onNavigateToDetail(Screen.App.Playlist(playlistId))
-                }
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Header
+            LibraryHeader(
+                onCreateClick = { *//* Handle create *//* }
             )
-        }
-        composable<Screen.App.DashBoard.Search> {
-            SearchScreen(
-                onTrackClick = { trackId ->
-                    onNavigateToDetail(Screen.App.Track(trackId))
-                },
-                onAlbumClick = { albumId ->
-                    onNavigateToDetail(Screen.App.Album(albumId))
-                },
-                onArtistClick = { artistId ->
-                    onNavigateToDetail(Screen.App.Artist(artistId))
-                },
-                onPlaylistClick = { playlistId ->
-                    onNavigateToDetail(Screen.App.Playlist(playlistId))
-                }
+            
+            // Filter Bar
+            LibraryFilterBar(
+                selectedFilter = selectedFilter,
+                onFilterSelected = { selectedFilter = it }
             )
-        }
-        composable<Screen.App.DashBoard.Library> {
-            LibraryScreen()
-        }
-        composable<Screen.App.DashBoard.Profile> {
-            ProfileScreen()
+            
+            // Search and Sort Bar
+            LibrarySearchSortBar(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it },
+                sortOption = sortOption,
+                onSortOptionChange = { sortOption = it }
+            )
+            
+            // Content List
+            LibraryContentList(
+                filter = selectedFilter,
+                searchQuery = searchQuery,
+                playlists = playlists,
+                albums = albums,
+                artists = artists,
+                onAlbumClick = onAlbumClick,
+                onPlaylistClick = onPlaylistClick,
+                onArtistClick = onArtistClick
+            )
         }
     }
+}*/
 
-    // Update current screen based on navigation
-    val currentDestination by navController.currentBackStackEntryAsState()
-    LaunchedEffect(currentDestination) {
-        currentDestination?.destination?.route?.let { route ->
-            when {
-                route.contains("Home") -> onCurrentScreenChange(Screen.App.DashBoard.Home)
-                route.contains("Search") -> onCurrentScreenChange(Screen.App.DashBoard.Search)
-                route.contains("Library") -> onCurrentScreenChange(Screen.App.DashBoard.Library)
-                route.contains("Profile") -> onCurrentScreenChange(Screen.App.DashBoard.Profile)
+ /*enum class LibraryFilter {
+    Playlists, Podcasts, Albums, Artists, Downloads
+}
+
+enum class SortOption {
+    Recents, RecentlyAdded, Alphabetical, Creator
+}*/
+
+@Composable
+private fun LibraryHeader(
+    onCreateClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Menu icon placeholder
+            IconButton(onClick = { /* Menu */ }) {
+                Icon(
+                    imageVector = Icons.Default.Search, // Replace with menu icon
+                    contentDescription = "Menu"
+                )
+            }
+            Text(
+                text = "Your Library",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextButton(onClick = onCreateClick) {
+                Text("+ Create")
+            }
+            // Full-screen toggle placeholder
+            IconButton(onClick = { /* Toggle */ }) {
+                Icon(
+                    imageVector = Icons.Default.Search, // Replace with fullscreen icon
+                    contentDescription = "Fullscreen"
+                )
             }
         }
     }
 }
 
 @Composable
-fun DetailPaneNavHost(
-    navController: NavHostController,
-    trackNavController: NavHostController,
-    listNavController: NavHostController,
-    onTrackSelected: (String) -> Unit,
-    onNavigateToDetail: (Screen) -> Unit,
-    onCurrentScreenChange: (Screen) -> Unit
+private fun LibraryFilterBar(
+    selectedFilter: LibraryFilter,
+    onFilterSelected: (LibraryFilter) -> Unit
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.App.EmptyDetailScreenDestination,
-        modifier = Modifier.fillMaxSize()
+    val filters = listOf(
+        LibraryFilter.Playlists,
+        LibraryFilter.Podcasts,
+        LibraryFilter.Albums,
+        LibraryFilter.Artists,
+        LibraryFilter.Downloads
+    )
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+
     ) {
-        composable<Screen.App.EmptyDetailScreenDestination> {
-            // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
-            HomeScreen(
-                onAlbumClick = { albumId ->
-                    onNavigateToDetail(Screen.App.Album(albumId))
-                },
-                onPlaylistClick = { playlistId ->
-                    onNavigateToDetail(Screen.App.Playlist(playlistId))
-                }
+        filters.forEach { filter ->
+            FilterChip(
+                selected = selectedFilter == filter,
+                onClick = { onFilterSelected(filter) },
+                label = { Text(filter.name) }
             )
-        }
-        composable<Screen.App.Album> { backStackEntry ->
-            val album = backStackEntry.toRoute<Screen.App.Album>()
-            AlbumScreen(
-                albumId = album.albumId,
-                onTrackSelected = onTrackSelected, // Pass to track detail pane
-                onBack = {
-                    // Navigate detail pane to empty screen
-                    // Also navigate list pane back to Home if needed
-                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-        composable<Screen.App.Artist> { backStackEntry ->
-            val artist = backStackEntry.toRoute<Screen.App.Artist>()
-            ArtistScreen(
-                artistId = artist.artistId,
-                onTrackSelected = onTrackSelected, // Pass to track detail pane
-                onBack = {
-                    // Navigate detail pane to empty screen
-                    // Also navigate list pane back to Home
-                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-        composable<Screen.App.Playlist> { backStackEntry ->
-            val playlist = backStackEntry.toRoute<Screen.App.Playlist>()
-            PlaylistScreen(
-                playlistId = playlist.playlistId,
-                onTrackSelected = onTrackSelected, // Pass to track detail pane
-                onBack = {
-                    // Navigate detail pane to empty screen
-                    // Also navigate list pane back to Home
-                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
-        }
-        // Track navigation from list pane goes here but opens in extra pane
-        composable<Screen.App.Track> { backStackEntry ->
-            val track = backStackEntry.toRoute<Screen.App.Track>()
-            // If track is selected from list, navigate to track pane
-            LaunchedEffect(track.trackId) {
-                trackNavController.navigate(Screen.App.Track(track.trackId)) {
-                    launchSingleTop = true
-                }
-                // Go back to empty detail
-                navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                    launchSingleTop = true
-                }
-            }
-            Box(modifier = Modifier.fillMaxSize())
         }
     }
 }
-
 
 @Composable
-fun TrackDetailPaneNavHost(
-    navController: NavHostController
+private fun LibrarySearchSortBar(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    sortOption: SortOption,
+    onSortOptionChange: (SortOption) -> Unit
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.App.EmptyDetailScreenDestination,
-        modifier = Modifier.fillMaxSize()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
-
-        composable<Screen.App.EmptyDetailScreenDestination> { backStackEntry ->
-            val track = backStackEntry.toRoute<Screen.App.EmptyDetailScreenDestination>()
-
-            // Empty track detail screen
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ){
-                Text("Empty Screee", textAlign = TextAlign.Center, fontSize = 56.sp)
-            }
-        }
-        composable<Screen.App.Track> { backStackEntry ->
-            val track = backStackEntry.toRoute<Screen.App.Track>()
-            TrackScreen(
-                trackId = track.trackId,
-                onBack = {
-                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
+        // Search icon placeholder
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "Search",
+            modifier = Modifier.size(20.dp)
+        )
+        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = sortOption.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            // Sort icon placeholder
+            Icon(
+                imageVector = Icons.Default.Search, // Replace with list/sort icon
+                contentDescription = "Sort",
+                modifier = Modifier.size(20.dp)
             )
         }
     }
 }
+/*
+@Composable
+private fun LibraryContentList(
+    filter: LibraryFilter,
+    searchQuery: String,
+    playlists: List<com.chachadev.spotifycmpclone.domain.model.Playlist>,
+    albums: List<com.chachadev.spotifycmpclone.domain.model.Album>,
+    artists: List<com.chachadev.spotifycmpclone.domain.model.Artist>,
+    onAlbumClick: (String) -> Unit,
+    onPlaylistClick: (String) -> Unit,
+    onArtistClick: (String) -> Unit
+) {
+    val filteredItems = remember(filter, searchQuery, playlists, albums, artists) {
+        val items = when (filter) {
+            LibraryFilter.Playlists -> playlists.map { LibraryItem.Playlist(it) }
+            LibraryFilter.Albums -> albums.map { LibraryItem.Album(it) }
+            LibraryFilter.Artists -> artists.map { LibraryItem.Artist(it) }
+            LibraryFilter.Podcasts -> emptyList() // TODO: Add podcast support
+            LibraryFilter.Downloads -> emptyList() // TODO: Add downloads support
+        }
+        
+        if (searchQuery.isBlank()) {
+            items
+        } else {
+            items.filter {
+                when (it) {
+                    is LibraryItem.Playlist -> it.playlist.name.contains(searchQuery, ignoreCase = true)
+                    is LibraryItem.Album -> it.album.name.contains(searchQuery, ignoreCase = true) ||
+                            it.album.artists.any { artist -> artist.name.contains(searchQuery, ignoreCase = true) }
+                    is LibraryItem.Artist -> it.artist.name.contains(searchQuery, ignoreCase = true)
+                    is LibraryItem.Podcast -> false // TODO
+                }
+            }
+        }
+    }
+    
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            items = filteredItems,
+            key = { item -> when (item) {
+                is LibraryItem.Playlist -> "playlist_${item.playlist.id}"
+                is LibraryItem.Album -> "album_${item.album.id}"
+                is LibraryItem.Artist -> "artist_${item.artist.id}"
+                is LibraryItem.Podcast -> "podcast_${item.id}"
+            }}
+        ) { item ->
+            LibraryItemRow(
+                item = item,
+                onAlbumClick = onAlbumClick,
+                onPlaylistClick = onPlaylistClick,
+                onArtistClick = onArtistClick
+            )
+        }
+    }
+}*/
+
+/* sealed class LibraryItem {
+    data class Playlist(val playlist: com.chachadev.spotifycmpclone.domain.model.Playlist) : LibraryItem()
+    data class Album(val album: com.chachadev.spotifycmpclone.domain.model.Album) : LibraryItem()
+    data class Artist(val artist: com.chachadev.spotifycmpclone.domain.model.Artist) : LibraryItem()
+    data class Podcast(val id: String, val name: String) : LibraryItem() // Placeholder
+}*/
+/*
+@Composable
+private fun LibraryItemRow(
+    item: LibraryItem,
+    onAlbumClick: (String) -> Unit,
+    onPlaylistClick: (String) -> Unit,
+    onArtistClick: (String) -> Unit
+) {
+    val (imageUrl, title, subtitle, onClick) = when (item) {
+        is LibraryItem.Playlist -> {
+            val imageUrl = item.playlist.images.firstOrNull()?.url
+            val subtitle = buildString {
+                append("Playlist")
+                item.playlist.tracks?.total?.let { total ->
+                    append(" • $total songs")
+                }
+                item.playlist.owner?.displayName?.let { owner ->
+                    append(" • $owner")
+                }
+            }
+            Quadruple(imageUrl, item.playlist.name, subtitle) {
+                onPlaylistClick(item.playlist.id)
+            }
+        }
+        is LibraryItem.Album -> {
+            val imageUrl = item.album.images.firstOrNull()?.url
+            val subtitle = buildString {
+                append("Album")
+                item.album.artists.firstOrNull()?.name?.let { artist ->
+                    append(" • $artist")
+                }
+            }
+            Quadruple(imageUrl, item.album.name, subtitle) {
+                onAlbumClick(item.album.id)
+            }
+        }
+        is LibraryItem.Artist -> {
+            val imageUrl = item.artist.images.firstOrNull()?.url
+            Quadruple(imageUrl, item.artist.name, "Artist") {
+                onArtistClick(item.artist.id)
+            }
+        }
+        is LibraryItem.Podcast -> {
+            Quadruple(null, item.name, "Podcast") { *//* TODO *//* }
+        }
+    }
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Artwork
+        com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage(
+            imageUrl = imageUrl,
+            contentDescription = title,
+            modifier = Modifier.size(56.dp),
+            contentScale = ContentScale.Crop
+        )
+        
+        // Title and Subtitle
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}*/
+
+/*
+data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
+*/
+
+
+
 
 private data class NavigationItem(
     val label: String,
