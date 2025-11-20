@@ -11,6 +11,8 @@ sealed interface Screen {
             @Serializable data object Search : Screen
             @Serializable data object Library : Screen
             @Serializable data object Profile : Screen
+            @Serializable data class Album(val albumId: String) : Screen
+
         }
         @Serializable data class Track(val trackId: String) : Screen
         @Serializable data class Album(val albumId: String) : Screen
