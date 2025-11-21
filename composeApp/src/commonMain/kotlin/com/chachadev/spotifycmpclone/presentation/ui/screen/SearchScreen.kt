@@ -36,14 +36,13 @@ fun SearchScreen(
     var searchQuery by remember { mutableStateOf(initialQuery) }
     val uiState by viewModel.uiState.collectAsState()
     
-    // Trigger search when initial query is provided and different from current query
+    // Trigger search when initial query changes (especially important in landscape mode)
+    // This ensures that when user types in the top bar, the search is triggered
     LaunchedEffect(initialQuery) {
-        if (initialQuery.isNotEmpty() && searchQuery != initialQuery) {
-            searchQuery = initialQuery
+        searchQuery = initialQuery
+        if (initialQuery.isNotEmpty()) {
             viewModel.search(initialQuery)
-        } else if (initialQuery.isEmpty() && searchQuery.isNotEmpty()) {
-            // Clear search if initial query is empty
-            searchQuery = ""
+        } else {
             viewModel.clearSearch()
         }
     }

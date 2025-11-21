@@ -30,7 +30,8 @@ fun DetailPaneNavHost(
     onNavigateToDetail: (Screen) -> Unit,
     onCurrentScreenChange: (Screen) -> Unit,
     orientation: ScreenOrientation,
-    searchQuery: String = ""
+    searchQuery: String = "",
+    onClearSearch: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -43,15 +44,19 @@ fun DetailPaneNavHost(
                 SearchScreen(
                     initialQuery = searchQuery,
                     onTrackClick = { trackId ->
+                        onClearSearch() // Clear search when track is clicked
                         onTrackSelected(trackId)
                     },
                     onAlbumClick = { albumId ->
+                        onClearSearch() // Clear search when album is clicked
                         onNavigateToDetail(Screen.App.Album(albumId))
                     },
                     onArtistClick = { artistId ->
+                        onClearSearch() // Clear search when artist is clicked
                         onNavigateToDetail(Screen.App.Artist(artistId))
                     },
                     onPlaylistClick = { playlistId ->
+                        onClearSearch() // Clear search when playlist is clicked
                         onNavigateToDetail(Screen.App.Playlist(playlistId))
                     },
                     orientation = orientation
@@ -77,7 +82,9 @@ fun DetailPaneNavHost(
                     // Navigate detail pane to empty screen
                     // Also navigate list pane back to Home if needed
                     navController.navigate(Screen.App.EmptyDetailScreenDestination) {
-                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            inclusive = true
+                        }
                         launchSingleTop = true
                     }
                 }

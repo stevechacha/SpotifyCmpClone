@@ -23,7 +23,8 @@ fun ListContent(
     onNavigateToDetail: (Screen) -> Unit,
     onCurrentScreenChange: (Screen) -> Unit,
     initialSearchQuery: String = "",
-    orientation: ScreenOrientation
+    orientation: ScreenOrientation,
+    onClearSearch: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -44,15 +45,19 @@ fun ListContent(
             SearchScreen(
                 initialQuery = initialSearchQuery,
                 onTrackClick = { trackId ->
+                    onClearSearch() // Clear search when track is clicked
                     onNavigateToDetail(Screen.App.Track(trackId))
                 },
                 onAlbumClick = { albumId ->
+                    onClearSearch() // Clear search when album is clicked
                     onNavigateToDetail(Screen.App.Album(albumId))
                 },
                 onArtistClick = { artistId ->
+                    onClearSearch() // Clear search when artist is clicked
                     onNavigateToDetail(Screen.App.Artist(artistId))
                 },
                 onPlaylistClick = { playlistId ->
+                    onClearSearch() // Clear search when playlist is clicked
                     onNavigateToDetail(Screen.App.Playlist(playlistId))
                 },
                 orientation = orientation

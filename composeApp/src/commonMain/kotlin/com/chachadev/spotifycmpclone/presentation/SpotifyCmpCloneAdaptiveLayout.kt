@@ -63,6 +63,7 @@ import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.chachadev.core.common.screen.Landscape
 import com.chachadev.core.common.screen.Portrait
 import com.chachadev.core.common.screen.ScreenOrientation
@@ -245,14 +246,31 @@ fun SpotifyCmpCloneAdaptiveLayout(
             
             // Search bar
             // Navigate to Search screen when user starts typing
-            LaunchedEffect(sharedSearchQuery) {
-                if (sharedSearchQuery.isNotEmpty() && currentListScreen != Screen.App.DashBoard.Search) {
-                    currentListScreen = Screen.App.DashBoard.Search
-                    listNavController.navigate(Screen.App.DashBoard.Search) {
-                        popUpTo(listNavController.graph.findStartDestination().id) {
-                            inclusive = false
+            LaunchedEffect(sharedSearchQuery, orientation, isDetailFlowActive) {
+                if (sharedSearchQuery.isNotEmpty()) {
+                    if (orientation is Landscape) {
+                        // In landscape mode, if we're on a detail screen, navigate back to show SearchScreen
+                        if (isDetailFlowActive) {
+                            scope.launch {
+                                detailNavController.navigate(Screen.App.EmptyDetailScreenDestination) {
+                                    popUpTo(detailNavController.graph.findStartDestination().id) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                            }
                         }
-                        launchSingleTop = true
+                    } else {
+                        // In portrait mode, navigate list pane to Search screen
+                        if (currentListScreen != Screen.App.DashBoard.Search) {
+                            currentListScreen = Screen.App.DashBoard.Search
+                            listNavController.navigate(Screen.App.DashBoard.Search) {
+                                popUpTo(listNavController.graph.findStartDestination().id) {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
                     }
                 }
             }
@@ -439,15 +457,58 @@ fun SpotifyCmpCloneAdaptiveLayout(
                 ListContent(
                     navController = listNavController,
                     onNavigateToDetail = { destination ->
-                        detailNavController.navigate(destination) {
-                            launchSingleTop = true
+                        // Check if we're navigating to a different item of the same type
+                        val currentBackStackEntry = detailNavController.currentBackStackEntry
+                        val currentRoute = currentBackStackEntry?.destination?.route ?: ""
+                        
+                        val isSameTypeDifferentId = when {
+                            destination is Screen.App.Album && currentRoute.contains("Album", ignoreCase = true) -> {
+                                try {
+                                    val currentAlbum = currentBackStackEntry?.toRoute<Screen.App.Album>()
+                                    currentAlbum?.albumId != destination.albumId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            destination is Screen.App.Artist && currentRoute.contains("Artist", ignoreCase = true) -> {
+                                try {
+                                    val currentArtist = currentBackStackEntry?.toRoute<Screen.App.Artist>()
+                                    currentArtist?.artistId != destination.artistId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            destination is Screen.App.Playlist && currentRoute.contains("Playlist", ignoreCase = true) -> {
+                                try {
+                                    val currentPlaylist = currentBackStackEntry?.toRoute<Screen.App.Playlist>()
+                                    currentPlaylist?.playlistId != destination.playlistId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            else -> false
+                        }
+                        
+                        if (isSameTypeDifferentId) {
+                            // Pop current screen and navigate to new one
+                            detailNavController.popBackStack()
+                            detailNavController.navigate(destination) {
+                                launchSingleTop = true
+                            }
+                        } else {
+                            detailNavController.navigate(destination) {
+                                launchSingleTop = true
+                            }
                         }
                     },
                     onCurrentScreenChange = { screen ->
                         currentListScreen = screen
                     },
                     initialSearchQuery = sharedSearchQuery,
-                    orientation = orientation
+                    orientation = orientation,
+                    onClearSearch = {
+                        sharedSearchQuery = ""
+                    }
                 )
                 else DesktopLibrary()
             },
@@ -469,15 +530,58 @@ fun SpotifyCmpCloneAdaptiveLayout(
                         }
                     },
                     onNavigateToDetail = { destination ->
-                        detailNavController.navigate(destination) {
-                            launchSingleTop = true
+                        // Check if we're navigating to a different item of the same type
+                        val currentBackStackEntry = detailNavController.currentBackStackEntry
+                        val currentRoute = currentBackStackEntry?.destination?.route ?: ""
+                        
+                        val isSameTypeDifferentId = when {
+                            destination is Screen.App.Album && currentRoute.contains("Album", ignoreCase = true) -> {
+                                try {
+                                    val currentAlbum = currentBackStackEntry?.toRoute<Screen.App.Album>()
+                                    currentAlbum?.albumId != destination.albumId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            destination is Screen.App.Artist && currentRoute.contains("Artist", ignoreCase = true) -> {
+                                try {
+                                    val currentArtist = currentBackStackEntry?.toRoute<Screen.App.Artist>()
+                                    currentArtist?.artistId != destination.artistId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            destination is Screen.App.Playlist && currentRoute.contains("Playlist", ignoreCase = true) -> {
+                                try {
+                                    val currentPlaylist = currentBackStackEntry?.toRoute<Screen.App.Playlist>()
+                                    currentPlaylist?.playlistId != destination.playlistId
+                                } catch (e: Exception) {
+                                    false
+                                }
+                            }
+                            else -> false
+                        }
+                        
+                        if (isSameTypeDifferentId) {
+                            // Pop current screen and navigate to new one
+                            detailNavController.popBackStack()
+                            detailNavController.navigate(destination) {
+                                launchSingleTop = true
+                            }
+                        } else {
+                            detailNavController.navigate(destination) {
+                                launchSingleTop = true
+                            }
                         }
                     },
                     onCurrentScreenChange = { screen ->
                         currentListScreen = screen
                     },
                     orientation = orientation,
-                    searchQuery = sharedSearchQuery
+                    searchQuery = sharedSearchQuery,
+                    onClearSearch = {
+                        sharedSearchQuery = ""
+                    }
                 )
             },
             extraPane = {
