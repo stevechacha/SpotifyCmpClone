@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -14,7 +15,7 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     
@@ -49,6 +50,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
@@ -83,7 +86,7 @@ kotlin {
             implementation(libs.zoomimage.compose.coil)
             implementation(libs.kotlinx.datetime)
             implementation(libs.material3.window.size.class1.multiplatform)
-
+            implementation(projects.core.common)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -129,13 +132,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
 }
 
 compose.desktop {

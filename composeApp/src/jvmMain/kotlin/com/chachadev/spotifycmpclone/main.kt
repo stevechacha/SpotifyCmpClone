@@ -1,23 +1,19 @@
 package com.chachadev.spotifycmpclone
 
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
-import org.koin.compose.koinInject
+import com.chachadev.core.common.config.toWindowState
+import com.chachadev.spotifycmpclone.utils.configuration
 
 fun main() = application {
 
-    val windowState = rememberWindowState(
-        width = 1200.dp,
-        height = 800.dp
-    )
-
+    val config = configuration()
 
     Window(
         onCloseRequest = ::exitApplication,
         title = "SpotifyCmpClone",
-        state = windowState
+        state = config.toWindowState(),
+        focusable = true,
     ) {
         App()
     }

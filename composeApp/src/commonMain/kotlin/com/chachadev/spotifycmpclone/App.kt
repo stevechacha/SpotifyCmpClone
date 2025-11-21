@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.rememberNavController
+import com.chachadev.core.common.screen.rememberScreenOrientation
 import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
 import com.chachadev.spotifycmpclone.di.appModule
 import com.chachadev.spotifycmpclone.presentation.navigation.NavigationRoot
@@ -24,6 +25,8 @@ fun App() {
     // In production, you should get the access token from OAuth flow
     // For now, using empty string - you'll need to implement Spotify OAuth
     val credentials = remember { PlatformSpotifyCredentials.get() }
+    val orientation = rememberScreenOrientation()
+
 
     KoinApplication({
         modules(appModule())
@@ -38,7 +41,10 @@ fun App() {
 
         SpotifyTheme {
             val navController = rememberNavController()
-            NavigationRoot(navController = navController)
+            NavigationRoot(
+                navController = navController,
+                orientation = orientation
+            )
 
         }
 
