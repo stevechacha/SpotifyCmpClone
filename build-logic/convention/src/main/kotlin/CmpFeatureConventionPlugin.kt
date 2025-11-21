@@ -60,7 +60,6 @@ class CmpFeatureConventionPlugin: Plugin<Project> {
                        implementation(libs.findLibrary("jetbrains-lifecycle-viewmodel-savedstate").get())
                        implementation(libs.findLibrary("jetbrains-savedstate").get())
                        implementation(libs.findLibrary("jetbrains-bundle").get())
-
                     }
 
                     jvmMain.dependencies {
@@ -69,8 +68,6 @@ class CmpFeatureConventionPlugin: Plugin<Project> {
                         implementation(libs.findLibrary("ktor-client-okhttp").get())
                         implementation(libs.findLibrary("kotlinx-coroutinesSwing").get())
                     }
-
-
 
                     iosMain.dependencies {
                         implementation(libs.findLibrary("ktor-client-ios").get())
@@ -86,11 +83,6 @@ class CmpFeatureConventionPlugin: Plugin<Project> {
 
                 }
             }
-
-            /*dependencies {
-                "commonMainImplementation"(project(":core:presentation"))
-                "commonMainImplementation"(project(":core:designsystem"))
-            }*/
         }
     }
 }
