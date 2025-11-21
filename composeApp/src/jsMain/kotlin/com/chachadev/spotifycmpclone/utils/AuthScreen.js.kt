@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation.ui.screen
+package com.chachadev.spotifycmpclone.utils
 
 import kotlinx.browser.window
 

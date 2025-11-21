@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation.ui.screen
+package com.chachadev.spotifycmpclone.utils
 
 actual fun getStoredAuthCode(): String? {
     // For Android, this would be handled via deep links or custom URL scheme

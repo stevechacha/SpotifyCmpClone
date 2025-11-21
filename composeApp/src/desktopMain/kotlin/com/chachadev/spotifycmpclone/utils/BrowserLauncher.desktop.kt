@@ -11,13 +11,9 @@ actual fun rememberBrowserLauncher(): BrowserLauncher {
                 Desktop.getDesktop().browse(java.net.URI(url))
             }
         }
-        
+
         override fun canHandleUrl(url: String): Boolean {
             return Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
         }
     }
 }
-
-
-
-

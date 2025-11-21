@@ -1,5 +1,6 @@
 package com.chachadev.spotifycmpclone.data.auth
 
+import com.chachadev.spotifycmpclone.utils.encodeUrlComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.FormDataContent
@@ -17,7 +18,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import com.chachadev.spotifycmpclone.utils.encodeUrlComponent
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.seconds

@@ -7,7 +7,13 @@ kotlin {
 
     sourceSets {
 
+        androidMain.dependencies {
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
+        }
+
         commonMain.dependencies {
+            implementation(libs.bundles.ktor.common)
 
         }
         mobileMain.dependencies {
@@ -15,7 +21,8 @@ kotlin {
         }
 
         webCommonMain.dependencies {
-
+            implementation(libs.ktor.client.js)
+            implementation(libs.jetbrains.kotlinx.browser)
         }
 
 

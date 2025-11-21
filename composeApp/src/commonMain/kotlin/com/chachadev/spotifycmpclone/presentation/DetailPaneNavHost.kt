@@ -15,7 +15,10 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.AlbumScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.ArtistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.PlaylistScreen
+import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.TrackScreen
+import com.chachadev.core.common.screen.Landscape
+import com.chachadev.core.common.screen.ScreenOrientation
 
 
 @Composable
@@ -25,7 +28,9 @@ fun DetailPaneNavHost(
     listNavController: NavHostController,
     onTrackSelected: (String) -> Unit,
     onNavigateToDetail: (Screen) -> Unit,
-    onCurrentScreenChange: (Screen) -> Unit
+    onCurrentScreenChange: (Screen) -> Unit,
+    orientation: ScreenOrientation,
+    searchQuery: String = ""
 ) {
     NavHost(
         navController = navController,
@@ -33,15 +38,35 @@ fun DetailPaneNavHost(
         modifier = Modifier.fillMaxSize()
     ) {
         composable<Screen.App.EmptyDetailScreenDestination> {
-            // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
-            HomeScreen(
-                onAlbumClick = { albumId ->
-                    onNavigateToDetail(Screen.App.Album(albumId))
-                },
-                onPlaylistClick = { playlistId ->
-                    onNavigateToDetail(Screen.App.Playlist(playlistId))
-                }
-            )
+            // In landscape mode, show SearchScreen when there's a search query, otherwise show HomeScreen
+            if (orientation is Landscape && searchQuery.isNotEmpty()) {
+                SearchScreen(
+                    initialQuery = searchQuery,
+                    onTrackClick = { trackId ->
+                        onTrackSelected(trackId)
+                    },
+                    onAlbumClick = { albumId ->
+                        onNavigateToDetail(Screen.App.Album(albumId))
+                    },
+                    onArtistClick = { artistId ->
+                        onNavigateToDetail(Screen.App.Artist(artistId))
+                    },
+                    onPlaylistClick = { playlistId ->
+                        onNavigateToDetail(Screen.App.Playlist(playlistId))
+                    },
+                    orientation = orientation
+                )
+            } else {
+                // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
+                HomeScreen(
+                    onAlbumClick = { albumId ->
+                        onNavigateToDetail(Screen.App.Album(albumId))
+                    },
+                    onPlaylistClick = { playlistId ->
+                        onNavigateToDetail(Screen.App.Playlist(playlistId))
+                    }
+                )
+            }
         }
         composable<Screen.App.Album> { backStackEntry ->
             val album = backStackEntry.toRoute<Screen.App.Album>()

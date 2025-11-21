@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.LibraryScreen
@@ -20,7 +21,9 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
 fun ListContent(
     navController: NavHostController,
     onNavigateToDetail: (Screen) -> Unit,
-    onCurrentScreenChange: (Screen) -> Unit
+    onCurrentScreenChange: (Screen) -> Unit,
+    initialSearchQuery: String = "",
+    orientation: ScreenOrientation
 ) {
     NavHost(
         navController = navController,
@@ -39,6 +42,7 @@ fun ListContent(
         }
         composable<Screen.App.DashBoard.Search> {
             SearchScreen(
+                initialQuery = initialSearchQuery,
                 onTrackClick = { trackId ->
                     onNavigateToDetail(Screen.App.Track(trackId))
                 },
@@ -50,7 +54,8 @@ fun ListContent(
                 },
                 onPlaylistClick = { playlistId ->
                     onNavigateToDetail(Screen.App.Playlist(playlistId))
-                }
+                },
+                orientation = orientation
             )
         }
         composable<Screen.App.DashBoard.Library> {
@@ -99,6 +104,7 @@ fun ListContent(
         }
         composable<Screen.App.DashBoard.Search> {
             SearchScreen(
+                initialQuery = initialSearchQuery,
                 onTrackClick = { trackId ->
                     onNavigateToDetail(Screen.App.Track(trackId))
                 },

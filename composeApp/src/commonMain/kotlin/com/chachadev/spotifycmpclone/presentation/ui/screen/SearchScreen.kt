@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.chachadev.core.common.screen.Portrait
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.ui.component.AlbumCard
 import com.chachadev.spotifycmpclone.presentation.ui.component.ArtistCard
 import com.chachadev.spotifycmpclone.presentation.ui.component.PlaylistCard
@@ -23,30 +26,45 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
+    initialQuery: String = "",
     onTrackClick: (String) -> Unit = {},
     onAlbumClick: (String) -> Unit = {},
     onArtistClick: (String) -> Unit = {},
-    onPlaylistClick: (String) -> Unit = {}
+    onPlaylistClick: (String) -> Unit = {},
+    orientation: ScreenOrientation
 ) {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf(initialQuery) }
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Trigger search when initial query is provided and different from current query
+    LaunchedEffect(initialQuery) {
+        if (initialQuery.isNotEmpty() && searchQuery != initialQuery) {
+            searchQuery = initialQuery
+            viewModel.search(initialQuery)
+        } else if (initialQuery.isEmpty() && searchQuery.isNotEmpty()) {
+            // Clear search if initial query is empty
+            searchQuery = ""
+            viewModel.clearSearch()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { newValue ->
-                searchQuery = newValue
-                viewModel.search(newValue)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Search for songs, artists, albums...") },
-            singleLine = true
-        )
-
+        if (orientation is Portrait){
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { newValue ->
+                    searchQuery = newValue
+                    viewModel.search(newValue)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Search for songs, artists, albums...") },
+                singleLine = true
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         when {

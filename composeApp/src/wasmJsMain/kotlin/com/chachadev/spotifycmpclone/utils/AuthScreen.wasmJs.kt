@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation.ui.screen
+package com.chachadev.spotifycmpclone.utils
 
 actual fun getStoredAuthCode(): String? {
     TODO("Not yet implemented")

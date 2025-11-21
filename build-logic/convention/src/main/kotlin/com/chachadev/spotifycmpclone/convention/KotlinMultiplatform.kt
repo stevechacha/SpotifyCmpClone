@@ -3,8 +3,10 @@ package com.chachadev.spotifycmpclone.convention
 import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+@OptIn(ExperimentalWasmDsl::class)
 internal fun Project.configureKotlinMultiplatform() {
     extensions.configure<LibraryExtension> {
         namespace = this@configureKotlinMultiplatform.pathToPackageName()
@@ -13,7 +15,6 @@ internal fun Project.configureKotlinMultiplatform() {
     configureAndroidTarget()
     configureDesktopTarget()
     configureBrowserTarget()
-
 
     extensions.configure<KotlinMultiplatformExtension> {
         listOf(

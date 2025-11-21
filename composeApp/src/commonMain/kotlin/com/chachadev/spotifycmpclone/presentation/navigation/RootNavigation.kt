@@ -27,6 +27,7 @@ fun NavigationRoot(
             onNavigate = navController::onNavigate,
             onNavigateBack = navController::onNavigateBack,
             onGoBack = navController::onGoBack,
+            orientation = orientation
         )
     }
 }

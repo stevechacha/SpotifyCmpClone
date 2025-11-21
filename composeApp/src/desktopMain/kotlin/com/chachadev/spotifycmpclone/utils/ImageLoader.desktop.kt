@@ -34,4 +34,3 @@ class JvmImageLoader(private val client: HttpClient) : ImageLoader {
         }
     }
 }
-
