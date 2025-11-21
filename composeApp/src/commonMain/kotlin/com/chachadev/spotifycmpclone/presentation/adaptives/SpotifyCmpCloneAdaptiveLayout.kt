@@ -101,7 +101,10 @@ fun SpotifyCmpCloneAdaptiveLayout(
         isDetailFlowActive = isDetailFlowActive,
         isTrackFlowActive = isTrackFlowActive,
         detailNavController = detailNavController,
-        trackNavController = trackNavController
+        trackNavController = trackNavController,
+        listNavController = listNavController,
+        currentListScreen = currentListScreen,
+        onCurrentListScreenChange = { currentListScreen = it }
     )
 
     val shouldShowNavigationBar = !isDetailFlowActive && !isTrackFlowActive
@@ -114,7 +117,22 @@ fun SpotifyCmpCloneAdaptiveLayout(
         detailNavController = detailNavController,
         currentListScreen = currentListScreen,
         onCurrentListScreenChange = { currentListScreen = it },
-        isDetailFlowActive = isDetailFlowActive
+        isDetailFlowActive = isDetailFlowActive,
+        isTrackFlowActive = isTrackFlowActive,
+        onNavigateBack = {
+            handleBackNavigation(
+                orientation = orientation,
+                scaffoldNavigator = scaffoldNavigator,
+                isDetailFlowActive = isDetailFlowActive,
+                isTrackFlowActive = isTrackFlowActive,
+                detailNavController = detailNavController,
+                trackNavController = trackNavController,
+                listNavController = listNavController,
+                currentListScreen = currentListScreen,
+                onCurrentListScreenChange = { currentListScreen = it },
+                scope = scope
+            )
+        }
     )
     NavigationSuiteScaffold(
         navigationItems = {

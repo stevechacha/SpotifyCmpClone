@@ -58,13 +58,15 @@ fun LandscapeTopNavigationBar(
     detailNavController: NavHostController,
     currentListScreen: Screen,
     onCurrentListScreenChange: (Screen) -> Unit,
-    isDetailFlowActive: Boolean
+    isDetailFlowActive: Boolean,
+    isTrackFlowActive: Boolean,
+    onNavigateBack: () -> Unit
 ) {
     if (orientation is Landscape) {
         val scope = rememberCoroutineScope()
         
         // Navigate to Search screen when user starts typing
-        LaunchedEffect(searchQuery, orientation, isDetailFlowActive) {
+        LaunchedEffect(searchQuery, orientation, isDetailFlowActive, isTrackFlowActive) {
             if (searchQuery.isNotEmpty()) {
                 if (orientation is Landscape) {
                     // In landscape mode, if we're on a detail screen, navigate back to show SearchScreen
@@ -103,7 +105,7 @@ fun LandscapeTopNavigationBar(
         ) {
             // Navigation arrows
             IconButton(
-                onClick = { /* Handle back navigation */ },
+                onClick = onNavigateBack,
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
