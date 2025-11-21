@@ -6,7 +6,7 @@ data class Image(
     val width: Int?
 )
 
+
 data class ExternalUrls(
     val spotify: String?
 )
-

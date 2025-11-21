@@ -1,5 +1,7 @@
 package com.chachadev.spotifycmpclone.domain.model
 
+import com.chachadev.spotifycmpclone.data.dto.AlbumDto
+
 data class Track(
     val id: String,
     val name: String,
@@ -10,4 +12,3 @@ data class Track(
     val externalUrls: ExternalUrls?,
     val images: List<Image> = emptyList()
 )
-

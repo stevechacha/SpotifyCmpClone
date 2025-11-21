@@ -129,6 +129,20 @@ class SpotifyApi(
             header(HttpHeaders.Authorization, "Bearer $accessToken")
         }.body()
     }
+
+    suspend fun getUserSavedAlbum(
+        accessToken: String
+    ): TracksResponseDto {
+        return client.get("$baseUrl/me/albums")
+            .body()
+    }
+
+    suspend fun getUserSavedTracks(
+        accessToken: String
+    ): TracksResponseDto {
+        return client.get("$baseUrl/me/tracks")
+            .body()
+    }
 }
 
 @kotlinx.serialization.Serializable
@@ -157,4 +171,3 @@ data class PlaylistTrackItemDto(
 data class PlaylistTracksResponseDto(
     val items: List<PlaylistTrackItemDto>
 )
-

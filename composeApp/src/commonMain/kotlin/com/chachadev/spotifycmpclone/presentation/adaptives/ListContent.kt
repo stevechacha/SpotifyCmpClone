@@ -64,7 +64,20 @@ fun ListContent(
             )
         }
         composable<Screen.App.DashBoard.Library> {
-            LibraryScreen()
+            LibraryScreen(
+                onAlbumClick = { albumId ->
+                    onNavigateToDetail(Screen.App.Album(albumId))
+                },
+                onPlaylistClick = { playlistId ->
+                    onNavigateToDetail(Screen.App.Playlist(playlistId))
+                },
+                onShowClick = { showId ->
+                    // TODO: Implement show detail screen navigation
+                },
+                onEpisodeClick = { episodeId ->
+                    // TODO: Implement episode detail screen navigation
+                }
+            )
         }
         composable<Screen.App.DashBoard.Profile> {
             ProfileScreen()

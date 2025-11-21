@@ -1,6 +1,8 @@
 package com.chachadev.spotifycmpclone.data.dto
 
 import com.chachadev.spotifycmpclone.domain.model.Album
+import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.ExternalUrls
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -26,4 +28,35 @@ data class AlbumDto(
         )
     }
 }
+/*
+data class AlbumDto(
+    @SerialName("album_type")
+    val albumType: String?,
+    @SerialName("total_tracks")
+    val totalTracks: Int?,
+    @SerialName("available_markets")
+    val availableMarkets: List<String>?,
+    @SerialName("external_urls")
+    val externalUrls: ExternalUrlsDto?,
+    val href: String?,
+    val id: String?,
+    val images: List<ImageDto>?,
+    val name: String?,
+    @SerialName("release_date")
+    val releaseDate: String?,
+    @SerialName("release_date_precision")
+    val releaseDatePrecision: String?,
+    val restrictions: RestrictionsDto?,
+    val type: String?,
+    val uri: String?,
+    val artists: List<ArtistDto>?,
+    val tracks: TracksDto?,
+    val copyrights: List<CopyrightDto>?,
+    @SerialName("external_ids")
+    val externalIds: ExternalIDsDto?,
+    val genres: List<String>?,
+    val label: String?,
+    val popularity: Int?
+)*/
+
 

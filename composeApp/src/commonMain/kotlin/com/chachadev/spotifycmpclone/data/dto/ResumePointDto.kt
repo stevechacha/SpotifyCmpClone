@@ -1,0 +1,20 @@
+package com.chachadev.spotifycmpclone.data.dto
+
+import com.chachadev.spotifycmpclone.domain.model.ResumePoint
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ResumePointDto(
+    @SerialName("fully_played")
+    val fullyPlayed: Boolean?,
+    @SerialName("resume_position_ms")
+    val resumePositionMS: Int?
+) {
+    fun toDomain(): ResumePoint {
+        return ResumePoint(
+            fullyPlayed = fullyPlayed,
+            resumePositionMS = resumePositionMS
+        )
+    }
+}

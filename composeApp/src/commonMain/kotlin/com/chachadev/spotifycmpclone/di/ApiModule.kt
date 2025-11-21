@@ -1,5 +1,6 @@
 package com.chachadev.spotifycmpclone.di
 
+import com.chachadev.spotifycmpclone.data.api.LibraryApiService
 import com.chachadev.spotifycmpclone.data.api.SpotifyApi
 import com.chachadev.spotifycmpclone.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.data.network.HttpClientFactory
@@ -19,6 +20,13 @@ val apiModule = module {
 
     single {
         SpotifyApi(
+            client = get(),
+            baseUrl = "https://api.spotify.com/v1"
+        )
+    }
+
+    single {
+        LibraryApiService(
             client = get(),
             baseUrl = "https://api.spotify.com/v1"
         )

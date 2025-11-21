@@ -29,18 +29,7 @@ data class PlaylistDto(
     }
 }
 
-@Serializable
-data class OwnerDto(
-    val id: String,
-    @SerialName("display_name") val displayName: String? = null
-) {
-    fun toDomain(): PlaylistOwner {
-        return PlaylistOwner(
-            id = id,
-            displayName = displayName
-        )
-    }
-}
+
 
 @Serializable
 data class TracksInfoDto(

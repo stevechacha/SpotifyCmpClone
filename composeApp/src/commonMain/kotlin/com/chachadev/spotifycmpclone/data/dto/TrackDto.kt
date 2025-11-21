@@ -29,3 +29,17 @@ data class TrackDto(
     }
 }
 
+
+/*
+data class TrackDto(
+    val id: String?,
+    val name: String?,
+    val artists: List<ArtistDto>?,
+    val album: AlbumDto?,
+    val durationMs: Int?,
+    val explicit: Boolean?,
+    val previewUrl: String?,
+    val uri: String?
+)
+*/
+

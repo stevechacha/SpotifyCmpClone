@@ -9,3 +9,5 @@ data class Artist(
     val followers: Int? = null
 )
 
+
+

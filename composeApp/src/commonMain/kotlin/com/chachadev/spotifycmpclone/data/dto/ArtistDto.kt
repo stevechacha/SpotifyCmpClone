@@ -1,6 +1,7 @@
 package com.chachadev.spotifycmpclone.data.dto
 
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.ExternalUrls
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -25,8 +26,13 @@ data class ArtistDto(
     }
 }
 
-@Serializable
-data class FollowersDto(
-    val total: Int? = null
-)
+/*data class ArtistDto(
+    val externalUrls: ExternalUrls?,
+    val href: String?,
+    val id: String?,
+    val name: String?,
+    val type: String?,
+    val uri: String?
+)*/
+
 
