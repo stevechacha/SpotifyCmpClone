@@ -4,12 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TrackScreen(
     trackId: String,
+    orientation: ScreenOrientation,
     viewModel: TrackDetailViewModel = koinViewModel(),
     onBack: () -> Unit = {}
 ) {
@@ -21,7 +23,8 @@ fun TrackScreen(
 
     DetailScreenScaffold(
         title = uiState.track?.name ?: "Track",
-        onBack = onBack
+        onBack = onBack,
+        orientation = orientation
     ) { paddingValues ->
         DetailScreenBody(
             paddingValues = paddingValues,

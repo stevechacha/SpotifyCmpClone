@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation
+package com.chachadev.spotifycmpclone.presentation.adaptives
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

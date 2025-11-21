@@ -34,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.chachadev.core.common.screen.Portrait
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
 import com.chachadev.spotifycmpclone.domain.model.Playlist
@@ -56,6 +58,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DetailScreenScaffold(
     title: String,
     onBack: () -> Unit,
+    orientation: ScreenOrientation,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -63,11 +66,13 @@ fun DetailScreenScaffold(
             CenterAlignedTopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                    if (orientation is Portrait){
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
                     }
                 }
             )
@@ -532,12 +537,14 @@ private fun ErrorPlaceholder(
 private fun DetailPlaceholderScreen(
     title: String,
     message: String,
+    orientation: ScreenOrientation,
     description: String,
     onBack: () -> Unit
 ) {
     DetailScreenScaffold(
         title = title,
-        onBack = onBack
+        onBack = onBack,
+        orientation = orientation
     ) { paddingValues ->
         Column(
             modifier = Modifier

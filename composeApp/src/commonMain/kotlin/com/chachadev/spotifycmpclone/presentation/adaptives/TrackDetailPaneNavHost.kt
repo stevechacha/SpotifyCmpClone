@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation
+package com.chachadev.spotifycmpclone.presentation.adaptives
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,12 +12,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.TrackScreen
 
 @Composable
 fun TrackDetailPaneNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    orientation: ScreenOrientation
 ) {
     NavHost(
         navController = navController,
@@ -25,7 +27,6 @@ fun TrackDetailPaneNavHost(
         modifier = Modifier.fillMaxSize()
     ) {
         // Should Return Either PlaylistDetail,ArtistDetails,AlbumDetails when navigated back
-
         composable<Screen.App.EmptyDetailScreenDestination> { backStackEntry ->
             val track = backStackEntry.toRoute<Screen.App.EmptyDetailScreenDestination>()
 
@@ -33,12 +34,13 @@ fun TrackDetailPaneNavHost(
             Box(
                 modifier = Modifier.fillMaxSize()
             ){
-                Text("Empty Screee", textAlign = TextAlign.Center, fontSize = 56.sp)
+                Text("Empty Screen", textAlign = TextAlign.Center, fontSize = 56.sp)
             }
         }
         composable<Screen.App.Track> { backStackEntry ->
             val track = backStackEntry.toRoute<Screen.App.Track>()
             TrackScreen(
+                orientation = orientation,
                 trackId = track.trackId,
                 onBack = {
                     navController.navigate(Screen.App.EmptyDetailScreenDestination) {

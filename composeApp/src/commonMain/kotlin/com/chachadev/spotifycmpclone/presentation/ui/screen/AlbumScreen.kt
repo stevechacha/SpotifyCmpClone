@@ -4,12 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AlbumScreen(
     albumId: String,
+    orientation: ScreenOrientation,
     viewModel: AlbumDetailViewModel = koinViewModel(),
     onTrackSelected: (String) -> Unit = {},
     onBack: () -> Unit = {}
@@ -22,7 +24,8 @@ fun AlbumScreen(
 
     DetailScreenScaffold(
         title = uiState.album?.name ?: "Album",
-        onBack = onBack
+        onBack = onBack,
+        orientation = orientation
     ) { paddingValues ->
         DetailScreenBody(
             paddingValues = paddingValues,

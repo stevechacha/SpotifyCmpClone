@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation
+package com.chachadev.spotifycmpclone.presentation.adaptives
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +16,6 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.ArtistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.PlaylistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
-import com.chachadev.spotifycmpclone.presentation.ui.screen.TrackScreen
 import com.chachadev.core.common.screen.Landscape
 import com.chachadev.core.common.screen.ScreenOrientation
 
@@ -76,6 +75,7 @@ fun DetailPaneNavHost(
         composable<Screen.App.Album> { backStackEntry ->
             val album = backStackEntry.toRoute<Screen.App.Album>()
             AlbumScreen(
+                orientation = orientation,
                 albumId = album.albumId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {
@@ -93,6 +93,7 @@ fun DetailPaneNavHost(
         composable<Screen.App.Artist> { backStackEntry ->
             val artist = backStackEntry.toRoute<Screen.App.Artist>()
             ArtistScreen(
+                orientation = orientation,
                 artistId = artist.artistId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {
@@ -108,6 +109,7 @@ fun DetailPaneNavHost(
         composable<Screen.App.Playlist> { backStackEntry ->
             val playlist = backStackEntry.toRoute<Screen.App.Playlist>()
             PlaylistScreen(
+                orientation = orientation,
                 playlistId = playlist.playlistId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
                 onBack = {

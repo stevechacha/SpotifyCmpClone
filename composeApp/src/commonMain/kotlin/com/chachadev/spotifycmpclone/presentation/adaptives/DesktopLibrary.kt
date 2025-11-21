@@ -1,4 +1,4 @@
-package com.chachadev.spotifycmpclone.presentation
+package com.chachadev.spotifycmpclone.presentation.adaptives
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 
 @Composable
 fun DesktopLibrary(
@@ -219,9 +220,9 @@ private fun LibrarySearchSortBar(
 private fun LibraryContentList(
     filter: LibraryFilter,
     searchQuery: String,
-    playlists: List<com.chachadev.spotifycmpclone.domain.model.Playlist>,
-    albums: List<com.chachadev.spotifycmpclone.domain.model.Album>,
-    artists: List<com.chachadev.spotifycmpclone.domain.model.Artist>,
+    playlists: List<Playlist>,
+    albums: List<Album>,
+    artists: List<Artist>,
     onAlbumClick: (String) -> Unit,
     onPlaylistClick: (String) -> Unit,
     onArtistClick: (String) -> Unit
@@ -336,7 +337,7 @@ private fun LibraryItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Artwork
-        com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage(
+        CoilImage(
             imageUrl = imageUrl,
             contentDescription = title,
             modifier = Modifier.size(56.dp),
