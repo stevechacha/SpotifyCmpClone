@@ -8,6 +8,13 @@ import androidx.compose.ui.platform.LocalContext
 private const val PREFS_NAME = "spotify_auth_prefs"
 private const val AUTH_CODE_KEY = "spotify_auth_code"
 
+// Global Application context - initialized in Application.onCreate()
+private var appContext: Context? = null
+
+fun initAuthCodeStorage(context: Context) {
+    appContext = context.applicationContext
+}
+
 @Composable
 actual fun getStoredAuthCode(): String? {
     val context = LocalContext.current
@@ -20,6 +27,15 @@ actual fun clearStoredAuthCode() {
     val context = LocalContext.current
     val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     prefs.edit().remove(AUTH_CODE_KEY).apply()
+}
+
+actual fun storeAuthCode(code: String) {
+    // Get Application context - initialized in Application.onCreate()
+    val context = appContext ?: throw IllegalStateException(
+        "AuthCode storage not initialized. Make sure initAuthCodeStorage() is called in Application.onCreate()"
+    )
+    val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    prefs.edit().putString(AUTH_CODE_KEY, code).apply()
 }
 
 // Android-specific function to store auth code with context (used from MainActivity)

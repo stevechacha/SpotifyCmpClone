@@ -19,7 +19,7 @@ actual fun clearStoredAuthCode() {
     defaults.synchronize()
 }
 
-fun storeAuthCode(code: String) {
+actual fun storeAuthCode(code: String) {
     val defaults = NSUserDefaults.standardUserDefaults
     defaults.setObject(code, AUTH_CODE_KEY)
     defaults.synchronize()

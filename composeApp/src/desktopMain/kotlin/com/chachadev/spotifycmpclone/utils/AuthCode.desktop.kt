@@ -13,3 +13,8 @@ actual fun getStoredAuthCode(): String? {
 actual fun clearStoredAuthCode() {
     // No-op for desktop
 }
+
+actual fun storeAuthCode(code: String) {
+    // For desktop, this would be handled via deep links or custom URL scheme
+    // For now, no-op - will be implemented with deep link handling
+}

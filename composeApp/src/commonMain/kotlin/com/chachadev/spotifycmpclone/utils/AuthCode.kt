@@ -7,3 +7,5 @@ expect fun getStoredAuthCode(): String?
 
 @Composable
 expect fun clearStoredAuthCode()
+
+expect fun storeAuthCode(code: String)
