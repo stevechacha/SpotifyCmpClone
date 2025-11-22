@@ -10,5 +10,16 @@
 	<string>25cb1fc758d14074be471a1c3cb45349</string>
 	<key>SpotifyRedirectURI</key>
 	<string>http://localhost:3000/callback</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>spotifycmpclone</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.chachadev.spotifycmpclone</string>
+		</dict>
+	</array>
 </dict>
 </plist>

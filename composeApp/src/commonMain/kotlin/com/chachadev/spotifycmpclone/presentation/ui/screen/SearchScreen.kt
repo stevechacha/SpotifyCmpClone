@@ -53,16 +53,16 @@ fun SearchScreen(
             .padding(16.dp)
     ) {
         if (orientation is Portrait){
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { newValue ->
-                    searchQuery = newValue
-                    viewModel.search(newValue)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Search for songs, artists, albums...") },
-                singleLine = true
-            )
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { newValue ->
+                searchQuery = newValue
+                viewModel.search(newValue)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Search for songs, artists, albums...") },
+            singleLine = true
+        )
         }
         Spacer(modifier = Modifier.height(16.dp))
 

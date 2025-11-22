@@ -7,23 +7,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PlaylistItemDto(
-    val collaborative: Boolean?,
-    val description: String?,
+    val collaborative: Boolean? = null,
+    val description: String? = null,
     @SerialName("external_urls")
-    val externalUrls: ExternalUrlsDto?,
-    val followers: FollowersDto?,
-    val href: String?,
-    val id: String?,
-    val images: List<ImageDto>?,
-    val name: String?,
-    val owner: OwnerDto?,
+    val externalUrls: ExternalUrlsDto? = null,
+    val followers: FollowersDto? = null,
+    val href: String? = null,
+    val id: String? = null,
+    val images: List<ImageDto>? = null,
+    val name: String? = null,
+    val owner: OwnerDto? = null,
     @SerialName("public")
-    val publicAccess: Boolean?,
+    val publicAccess: Boolean? = null,
     @SerialName("snapshot_id")
-    val snapshotID: String?,
-    val tracks: TracksDto?,
-    val type: String?,
-    val uri: String?
+    val snapshotID: String? = null,
+    val tracks: TracksDto? = null,
+    val type: String? = null,
+    val uri: String? = null
 ) {
     fun toDomain(): PlaylistItem {
         return PlaylistItem(

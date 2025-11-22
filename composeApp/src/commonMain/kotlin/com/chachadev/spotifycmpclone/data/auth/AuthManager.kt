@@ -42,6 +42,10 @@ class AuthManager(
         _isSignedIn.value = signedIn
     }
     
+    fun getRedirectUri(): String {
+        return redirectUri
+    }
+    
     fun getSignInUrl(): String {
         val scopes = listOf(
             "user-read-private",

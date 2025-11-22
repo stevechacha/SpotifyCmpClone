@@ -31,11 +31,11 @@ kotlin {
 
      */
     
-    js {
+   /* js {
         browser()
         binaries.executable()
     }
-    
+    */
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
@@ -52,17 +52,20 @@ kotlin {
             implementation(libs.androidx.datastore.preferences)
 
 
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+
         }
-        jsMain.dependencies {
+      /*  jsMain.dependencies {
             implementation(libs.ktor.client.js)
             implementation(libs.jetbrains.kotlinx.browser)
-        }
 
+        }
+*/
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -87,6 +90,9 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.material3.window.size.class1.multiplatform)
             implementation(projects.core.common)
+            implementation(libs.github.compose.webview.multiplatform)
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -104,11 +110,13 @@ kotlin {
             implementation(compose.desktop.macos_arm64)
             implementation(compose.desktop.windows_x64)
             implementation(compose.desktop.windows_arm64)
+
         }
 
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)
             implementation(libs.jetbrains.kotlinx.browser)
+
         }
     }
 }

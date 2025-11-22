@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FollowersDto(
-    val href: String?,
-    val total: Int?
+    val href: String? = null,
+    val total: Int? = null
 ){
     fun toDomain(): Followers {
         return Followers(

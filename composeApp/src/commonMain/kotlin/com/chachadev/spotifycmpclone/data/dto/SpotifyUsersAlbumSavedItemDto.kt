@@ -14,6 +14,6 @@ data class SpotifyUsersAlbumSavedItemDto(
         return SpotifyUsersAlbumSavedItem(
             addedAt = addedAt,
             album = album?.toDomain()
-        )
+)
     }
 }

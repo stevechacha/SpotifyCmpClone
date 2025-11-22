@@ -12,6 +12,8 @@ pluginManagement {
             }
         }
         mavenCentral()
+        maven("https://jogamp.org/deployment/maven")
+
         gradlePluginPortal()
     }
 }
@@ -25,6 +27,8 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        maven("https://jogamp.org/deployment/maven")
+
         mavenCentral()
     }
 }

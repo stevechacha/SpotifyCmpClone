@@ -14,6 +14,6 @@ data class UsersSavedShowsItemsDto(
         return UsersSavedShowsItems(
             addedAt = addedAt,
             show = show.toDomain()
-        )
+)
     }
 }

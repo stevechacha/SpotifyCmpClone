@@ -15,6 +15,7 @@ androidx-testExt = "1.3.0"
 composeHotReload = "1.0.0-rc04"
 composeMultiplatform = "1.9.3"
 datastore = "1.2.0"
+githubComposeWebviewMultiplatform = "2.0.3"
 junit = "4.13.2"
 
 projectApplicationId = "com.chachadev.spotifycmpclone"
@@ -59,6 +60,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
 
+github-compose-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "githubComposeWebviewMultiplatform" }
 junit = { module = "junit:junit", version.ref = "junit" }
 jetbrains-kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinxBrowserVersion" }
 jetbrains-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }

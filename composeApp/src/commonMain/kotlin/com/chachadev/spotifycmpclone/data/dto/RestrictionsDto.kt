@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RestrictionsDto(
-    val reason: String?
+    val reason: String? = null
 ) {
     fun toDomain(): Restrictions {
         return Restrictions(
             reason = reason
-        )
+)
     }
 }

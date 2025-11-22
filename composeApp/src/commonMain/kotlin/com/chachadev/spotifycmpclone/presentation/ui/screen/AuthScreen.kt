@@ -43,7 +43,7 @@ fun AuthScreen(
 
     LaunchedEffect(Unit) {
         // Check if we have a stored auth code (from callback)
-        val storedCode = getStoredAuthCode()
+        /*val storedCode = getStoredAuthCode()
         if (storedCode != null) {
             // We have an auth code, exchange it for token
             scope.launch {
@@ -59,7 +59,7 @@ fun AuthScreen(
             } catch (e: Exception) {
                 errorMessage = "Cannot open browser: ${e.message}"
             }
-        }
+        }*/
     }
     
     Surface(

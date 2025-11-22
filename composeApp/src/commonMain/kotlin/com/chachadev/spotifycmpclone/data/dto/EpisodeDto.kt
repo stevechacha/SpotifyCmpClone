@@ -7,35 +7,35 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EpisodeDto(
     @SerialName("audio_preview_url")
-    val audioPreviewURL: String?,
-    val description: String?,
+    val audioPreviewURL: String? = null,
+    val description: String? = null,
     @SerialName("html_description")
-    val htmlDescription: String?,
+    val htmlDescription: String? = null,
     @SerialName("duration_ms")
-    val durationMs: Int?,
-    val explicit: Boolean?,
+    val durationMs: Int? = null,
+    val explicit: Boolean? = null,
     @SerialName("external_urls")
-    val externalURLs: ExternalUrlsDto?,
-    val href: String?,
-    val id: String?,
-    val images: List<ImageDto>?,
+    val externalURLs: ExternalUrlsDto? = null,
+    val href: String? = null,
+    val id: String? = null,
+    val images: List<ImageDto>? = null,
     @SerialName("is_externally_hosted")
-    val isExternallyHosted: Boolean?,
+    val isExternallyHosted: Boolean? = null,
     @SerialName("is_playable")
-    val isPlayable: Boolean?,
-    val language: String?,
-    val languages: List<String>?,
-    val name: String?,
+    val isPlayable: Boolean? = null,
+    val language: String? = null,
+    val languages: List<String>? = null,
+    val name: String? = null,
     @SerialName("release_date")
-    val releaseDate: String?,
+    val releaseDate: String? = null,
     @SerialName("release_date_precision")
-    val releaseDatePrecision: String?,
+    val releaseDatePrecision: String? = null,
     @SerialName("resume_point")
-    val resumePoint: ResumePointDto?,
-    val type: String?,
-    val uri: String?,
-    val restrictions: RestrictionsDto?,
-    val show: ShowDto?
+    val resumePoint: ResumePointDto? = null,
+    val type: String? = null,
+    val uri: String? = null,
+    val restrictions: RestrictionsDto? = null,
+    val show: ShowDto? = null
 ) {
     fun toDomain(): Episode {
         return Episode(

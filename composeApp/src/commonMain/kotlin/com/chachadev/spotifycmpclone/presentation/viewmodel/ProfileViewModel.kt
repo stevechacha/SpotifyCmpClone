@@ -19,11 +19,44 @@ class ProfileViewModel(
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
     
     var onSignInSuccess: (() -> Unit)? = null
+    var onStartOAuthFlow: ((String) -> Unit)? = null
+
+    init {
+        // Check if user is already signed in
+        viewModelScope.launch {
+            authManager.isSignedIn.collect { isSignedIn ->
+                if (isSignedIn && !_uiState.value.isLoggedIn) {
+                    // User is signed in, fetch profile
+                    loadUserProfile()
+                } else if (!isSignedIn) {
+                    _uiState.value = _uiState.value.copy(isLoggedIn = false, user = null)
+                }
+            }
+        }
+    }
 
     fun login() {
-        // OAuth flow will be handled by AuthScreen
-        // This method is kept for backward compatibility but will trigger OAuth
-        onSignInSuccess?.invoke()
+        // Trigger OAuth flow by getting sign-in URL and opening it
+        viewModelScope.launch {
+            val signInUrl = authManager.getSignInUrl()
+            onStartOAuthFlow?.invoke(signInUrl)
+        }
+    }
+    
+    fun loadUserProfile() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            val userResult = repository.getCurrentUser()
+            val user = userResult.getOrNull()
+            val error = userResult.exceptionOrNull()?.message
+            
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                isLoggedIn = true,
+                user = user,
+                error = error
+            )
+        }
     }
     
     suspend fun handleAuthCallback(code: String) {

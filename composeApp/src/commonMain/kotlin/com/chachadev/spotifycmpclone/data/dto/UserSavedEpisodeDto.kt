@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserSavedEpisodeDto(
     @SerialName("added_at")
-    val addedAt: String?,
-    val episode: EpisodeDto?
+    val addedAt: String? = null,
+    val episode: EpisodeDto? = null
 ) {
     fun toDomain(): UserSavedEpisode {
         return UserSavedEpisode(
             addedAt = addedAt,
             episode = episode?.toDomain()
-        )
+)
     }
 }

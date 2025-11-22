@@ -1,7 +1,6 @@
 package com.chachadev.spotifycmpclone
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.rememberNavController
 import com.chachadev.core.common.screen.rememberScreenOrientation
@@ -22,9 +21,8 @@ import org.koin.compose.KoinApplication
 @Composable
 fun App() {
     // Initialize Koin only once
-    // In production, you should get the access token from OAuth flow
-    // For now, using empty string - you'll need to implement Spotify OAuth
-    val credentials = remember { PlatformSpotifyCredentials.get() }
+    // Read credentials dynamically (not cached) to ensure we get the latest values
+    val credentials = PlatformSpotifyCredentials.get()
     val orientation = rememberScreenOrientation()
 
 

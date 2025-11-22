@@ -13,15 +13,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.chachadev.spotifycmpclone.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
+import com.chachadev.spotifycmpclone.utils.clearStoredAuthCode
+import com.chachadev.spotifycmpclone.utils.getStoredAuthCode
+import com.chachadev.spotifycmpclone.utils.rememberBrowserLauncher
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -29,6 +41,68 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val authManager: AuthManager = koinInject()
+    val uriHandler = LocalUriHandler.current
+    val browserLauncher = rememberBrowserLauncher()
+    val scope = rememberCoroutineScope()
+    
+    // State to show OAuth WebView
+    var showOAuthWebView by remember { mutableStateOf(false) }
+    var signInUrl by remember { mutableStateOf<String?>(null) }
+    
+    // Get stored auth code in composable context
+    val storedCode = getStoredAuthCode()
+    var processedCode by remember { mutableStateOf<String?>(null) }
+    
+    // Clear the code immediately after reading it (in composable context)
+    if (storedCode != null && storedCode != processedCode) {
+        // Mark as processed and clear it
+        processedCode = storedCode
+        clearStoredAuthCode()
+    }
+    
+    // Handle OAuth flow
+    LaunchedEffect(processedCode) {
+        // Check if we have a processed code to exchange
+        if (processedCode != null) {
+            val codeToUse = processedCode!!
+            // Exchange code for token
+            scope.launch {
+                viewModel.handleAuthCallback(codeToUse)
+            }
+        }
+    }
+    
+    // Set up OAuth flow callback - use WebView instead of external browser
+    LaunchedEffect(Unit) {
+        viewModel.onStartOAuthFlow = { url ->
+            signInUrl = url
+            showOAuthWebView = true
+        }
+    }
+    
+    // Get redirect URI from AuthManager
+    val redirectUri = remember {
+        authManager.getRedirectUri()
+    }
+    
+    // Show OAuth WebView if needed
+    if (showOAuthWebView && signInUrl != null) {
+        OAuthWebViewScreen(
+            signInUrl = signInUrl!!,
+            redirectUri = redirectUri,
+            viewModel = viewModel,
+            onAuthSuccess = {
+                showOAuthWebView = false
+                signInUrl = null
+            },
+            onAuthFailure = { error ->
+                showOAuthWebView = false
+                signInUrl = null
+            }
+        )
+        return
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -129,41 +203,55 @@ fun ProfileScreen(
                     }
                 }
             } else {
-                // Login Section
-                Text(
-                    text = "Sign in to sync your library and playlists.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-
-                if (uiState.error != null) {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-
-                Button(
-                    onClick = { viewModel.login() },
-                    modifier = Modifier.padding(top = 16.dp),
-                    enabled = !uiState.isLoading
+                // Login/Register Section
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                    Text(
+                        text = "Sign in to Spotify",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    Text(
+                        text = "Sign in to sync your library, playlists, and access your saved content.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    if (uiState.error != null) {
+                        Text(
+                            text = "Error: ${uiState.error}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+
+                    Button(
+                        onClick = { viewModel.login() },
+                        modifier = Modifier.padding(top = 8.dp),
+                        enabled = !uiState.isLoading
                     ) {
-                        if (uiState.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .padding(end = 8.dp),
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (uiState.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .padding(end = 8.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                            Text("Sign in with Spotify")
                         }
-                        Text("Log in with Spotify")
                     }
                 }
             }

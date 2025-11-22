@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navDeepLink
 import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
@@ -79,7 +80,13 @@ fun ListContent(
                 }
             )
         }
-        composable<Screen.App.DashBoard.Profile> {
+        composable<Screen.App.DashBoard.Profile> (
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "http://localhost:3000/callback"
+                }
+            )
+        ){
             ProfileScreen()
         }
     }

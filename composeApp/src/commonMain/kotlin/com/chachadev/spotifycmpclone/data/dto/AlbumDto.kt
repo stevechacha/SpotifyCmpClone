@@ -14,7 +14,8 @@ data class AlbumDto(
     val images: List<ImageDto>,
     @SerialName("release_date") val releaseDate: String? = null,
     @SerialName("total_tracks") val totalTracks: Int? = null,
-    @SerialName("external_urls") val externalUrls: ExternalUrlsDto? = null
+    @SerialName("external_urls") val externalUrls: ExternalUrlsDto? = null,
+    val tracks: TracksDto? = null
 ) {
     fun toDomain(): Album {
         return Album(

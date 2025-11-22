@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TracksDto(
-    val href: String?,
-    val limit: Int?,
-    val next: String?,
-    val offset: Int?,
-    val previous: String?,
-    val total: Int?,
-    val items: List<TrackDto>?
+    val href: String? = null,
+    val limit: Int? = null,
+    val next: String? = null,
+    val offset: Int? = null,
+    val previous: String? = null,
+    val total: Int? = null,
+    val items: List<TrackDto>? = null
 ) {
     fun toDomain(): Tracks {
         return Tracks(

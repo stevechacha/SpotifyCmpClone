@@ -12,6 +12,6 @@ data class CopyrightDto(
         return Copyright(
             text = text,
             type = type
-        )
+)
     }
 }

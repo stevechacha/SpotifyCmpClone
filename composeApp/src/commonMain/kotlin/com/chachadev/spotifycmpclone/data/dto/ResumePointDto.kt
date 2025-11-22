@@ -7,14 +7,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ResumePointDto(
     @SerialName("fully_played")
-    val fullyPlayed: Boolean?,
+    val fullyPlayed: Boolean? = null,
     @SerialName("resume_position_ms")
-    val resumePositionMS: Int?
+    val resumePositionMS: Int? = null
 ) {
     fun toDomain(): ResumePoint {
         return ResumePoint(
             fullyPlayed = fullyPlayed,
             resumePositionMS = resumePositionMS
-        )
+)
     }
 }
