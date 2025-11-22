@@ -39,6 +39,9 @@ fun ListContent(
                 },
                 onPlaylistClick = { playlistId ->
                     onNavigateToDetail(Screen.App.Playlist(playlistId))
+                },
+                onTrackClick = { trackId ->
+                    onNavigateToDetail(Screen.App.Track(trackId))
                 }
             )
         }

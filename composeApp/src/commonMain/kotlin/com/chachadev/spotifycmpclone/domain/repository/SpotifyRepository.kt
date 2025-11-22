@@ -19,5 +19,6 @@ interface SpotifyRepository {
     suspend fun getAlbumTracks(albumId: String): Result<List<Track>>
     suspend fun getPlaylistTracks(playlistId: String): Result<List<Track>>
     suspend fun getCurrentUser(): Result<User>
+    suspend fun getRecentlyPlayedTracks(limit: Int = 20): Result<List<Track>>
 }
 

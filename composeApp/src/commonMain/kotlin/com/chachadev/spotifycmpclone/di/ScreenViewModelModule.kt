@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 
 val screenViewModelModule = module {
-    factory { HomeViewModel(get(), get()) }
+    factory { HomeViewModel(get(), get(),get()) }
     factory { SearchViewModel(get()) }
     factory { AlbumDetailViewModel(get(), get()) }
     factory { PlaylistDetailViewModel(get(), get()) }

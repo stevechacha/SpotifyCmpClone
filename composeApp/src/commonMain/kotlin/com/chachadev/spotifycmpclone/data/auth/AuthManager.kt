@@ -7,9 +7,12 @@ import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import io.ktor.http.parameters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +21,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.seconds
@@ -27,7 +31,8 @@ class AuthManager(
     private val httpClient: HttpClient,
     private val clientId: String,
     private val clientSecret: String,
-    private val redirectUri: String
+    private val redirectUri: String,
+    private val settingsManager: SettingsManager
 ) {
 
     private val mutex = Mutex()
@@ -38,8 +43,37 @@ class AuthManager(
     private val _isSignedIn = MutableStateFlow(false)
     val isSignedIn: StateFlow<Boolean> = _isSignedIn.asStateFlow()
     
+    init {
+        // Load persisted state on initialization
+        loadPersistedState()
+    }
+    
+    private fun loadPersistedState() {
+        cachedToken = settingsManager.getAccessToken()
+        refreshToken = settingsManager.getRefreshToken()
+        expiresAtMillis = settingsManager.getExpiresAtMillis()
+        val persistedSignedIn = settingsManager.getIsSignedIn()
+        _isSignedIn.value = persistedSignedIn
+        
+        println("AuthManager: Loaded persisted state - signedIn: $persistedSignedIn, hasToken: ${cachedToken != null}, hasRefreshToken: ${refreshToken != null}")
+    }
+    
     fun setSignedIn(signedIn: Boolean) {
         _isSignedIn.value = signedIn
+        settingsManager.setIsSignedIn(signedIn)
+        
+        // Clear auth data if signing out
+        if (!signedIn) {
+            clearAuthData()
+        }
+    }
+    
+    private fun clearAuthData() {
+        cachedToken = null
+        refreshToken = null
+        expiresAtMillis = 0L
+        settingsManager.clearAuthData()
+        println("AuthManager: Cleared all auth data")
     }
     
     fun getRedirectUri(): String {
@@ -91,11 +125,29 @@ class AuthManager(
                 cachedToken = refreshResponse.accessToken
                 refreshResponse.refreshToken?.let { rt -> refreshToken = rt }
                 expiresAtMillis = now + (refreshResponse.expiresIn - SAFETY_SECONDS).coerceAtLeast(30).seconds.inWholeMilliseconds
+                
+                // Persist updated tokens
+                settingsManager.setAccessToken(refreshResponse.accessToken)
+                refreshResponse.refreshToken?.let { rt -> settingsManager.setRefreshToken(rt) }
+                settingsManager.setExpiresAtMillis(expiresAtMillis)
+                
                 return refreshResponse.accessToken
+            } else {
+                // Refresh token failed - user needs to sign in again
+                println("AuthManager: Token refresh failed - signing out user")
+                setSignedIn(false)
+                throw Exception("Token refresh failed. Please sign in again.")
             }
         }
 
-        // Fallback to client credentials if no refresh token
+        // If we were signed in but have no refresh token, sign out
+        if (_isSignedIn.value) {
+            println("AuthManager: No refresh token available but user is signed in - signing out")
+            setSignedIn(false)
+            throw Exception("Session expired. Please sign in again.")
+        }
+
+        // Fallback to client credentials only if user is not signed in
         val response = requestToken()
         cachedToken = response.accessToken
         expiresAtMillis = now + (response.expiresIn - SAFETY_SECONDS).coerceAtLeast(30).seconds.inWholeMilliseconds
@@ -108,7 +160,10 @@ class AuthManager(
             @OptIn(ExperimentalEncodingApi::class)
             val basic = Base64.encode("$clientId:$clientSecret".encodeToByteArray())
             
-            val response = httpClient.post(TOKEN_URL) {
+            println("AuthManager: Exchanging code for token...")
+            println("AuthManager: Redirect URI: $redirectUri")
+            
+            val httpResponse = httpClient.post(TOKEN_URL) {
                 header(HttpHeaders.Authorization, "Basic $basic")
                 contentType(ContentType.Application.FormUrlEncoded)
                 setBody(
@@ -120,7 +175,39 @@ class AuthManager(
                         }
                     )
                 )
-            }.body<OAuthTokenResponse>()
+            }
+            
+            println("AuthManager: HTTP Status: ${httpResponse.status}")
+            
+            // Check if response is successful
+            if (!httpResponse.status.isSuccess()) {
+                val errorBody = httpResponse.bodyAsText()
+                println("AuthManager: Error response body: $errorBody")
+                return Result.failure(Exception("Token exchange failed: ${httpResponse.status} - $errorBody"))
+            }
+            
+            val responseBody = httpResponse.bodyAsText()
+            println("AuthManager: Response body: $responseBody")
+            
+            // Check if response is an error (Spotify returns error responses as JSON with "error" field)
+            if (responseBody.contains("\"error\"")) {
+                try {
+                    val errorResponse = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+                        .decodeFromString<OAuthErrorResponse>(responseBody)
+                    println("AuthManager: OAuth error: ${errorResponse.error} - ${errorResponse.errorDescription}")
+                    return Result.failure(Exception("OAuth error: ${errorResponse.error} - ${errorResponse.errorDescription}"))
+                } catch (e: Exception) {
+                    println("AuthManager: Failed to parse error response: ${e.message}")
+                }
+            }
+            
+            val response = httpResponse.body<OAuthTokenResponse>()
+            
+            println("AuthManager: Token exchange successful")
+            println("AuthManager: Token type: ${response.tokenType}")
+            println("AuthManager: Expires in: ${response.expiresIn}")
+            println("AuthManager: Has refresh token: ${response.refreshToken != null}")
+            println("AuthManager: Scope: ${response.scope}")
             
             // Cache the tokens
             mutex.withLock {
@@ -128,11 +215,18 @@ class AuthManager(
                 refreshToken = response.refreshToken
                 val now = kotlin.time.Clock.System.now().toEpochMilliseconds()
                 expiresAtMillis = now + (response.expiresIn - SAFETY_SECONDS).coerceAtLeast(30).seconds.inWholeMilliseconds
+                
+                // Persist tokens
+                settingsManager.setAccessToken(response.accessToken)
+                settingsManager.setRefreshToken(response.refreshToken)
+                settingsManager.setExpiresAtMillis(expiresAtMillis)
             }
             
             setSignedIn(true)
             Result.success(response)
         } catch (e: Exception) {
+            println("AuthManager: Exception during token exchange: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }
@@ -142,7 +236,7 @@ class AuthManager(
         return try {
             val basic = Base64.encode("$clientId:$clientSecret".encodeToByteArray())
             
-            val response = httpClient.post(TOKEN_URL) {
+            val httpResponse = httpClient.post(TOKEN_URL) {
                 header(HttpHeaders.Authorization, "Basic $basic")
                 contentType(ContentType.Application.FormUrlEncoded)
                 setBody(
@@ -153,11 +247,21 @@ class AuthManager(
                         }
                     )
                 )
-            }.body<OAuthTokenResponse>()
+            }
             
+            if (!httpResponse.status.isSuccess()) {
+                val errorBody = httpResponse.bodyAsText()
+                println("AuthManager: Token refresh failed - HTTP ${httpResponse.status}: $errorBody")
+                return null
+            }
+            
+            val response = httpResponse.body<OAuthTokenResponse>()
             this.refreshToken = response.refreshToken ?: refreshToken
+            println("AuthManager: Token refreshed successfully")
             response
         } catch (e: Exception) {
+            println("AuthManager: Exception during token refresh: ${e.message}")
+            e.printStackTrace()
             null
         }
     }
@@ -197,6 +301,12 @@ class AuthManager(
         @SerialName("scope") val scope: String? = null,
         @SerialName("token_type") val tokenType: String
     )
+    
+    @Serializable
+    data class OAuthErrorResponse(
+        val error: String,
+        @SerialName("error_description") val errorDescription: String? = null
+    )
 
     companion object {
         private const val TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -204,4 +314,5 @@ class AuthManager(
         private const val REFRESH_MARGIN_MS = 30_000L
     }
 }
+
 

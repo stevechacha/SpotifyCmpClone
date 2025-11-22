@@ -4,6 +4,7 @@ import com.chachadev.spotifycmpclone.data.dto.AlbumDto
 import com.chachadev.spotifycmpclone.data.dto.ArtistDto
 import com.chachadev.spotifycmpclone.data.dto.NewReleasesDto
 import com.chachadev.spotifycmpclone.data.dto.PlaylistDto
+import com.chachadev.spotifycmpclone.data.dto.RecentlyPlayedResponseDto
 import com.chachadev.spotifycmpclone.data.dto.SearchResultDto
 import com.chachadev.spotifycmpclone.data.dto.TrackDto
 import com.chachadev.spotifycmpclone.data.dto.UserDto
@@ -12,7 +13,10 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
 
 class SpotifyApi(
     private val client: HttpClient,
@@ -140,8 +144,36 @@ class SpotifyApi(
     suspend fun getUserSavedTracks(
         accessToken: String
     ): TracksResponseDto {
-        return client.get("$baseUrl/me/tracks")
-            .body()
+        return client.get("$baseUrl/me/tracks") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+        }.body()
+    }
+
+    suspend fun getRecentlyPlayedTracks(
+        limit: Int = 20,
+        accessToken: String,
+        after: Long? = null,
+        before: Long? = null
+    ): RecentlyPlayedResponseDto {
+        val httpResponse = client.get("$baseUrl/me/player/recently-played") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+            parameter("limit", limit)
+            after?.let { parameter("after", it) }
+            before?.let { parameter("before", it) }
+        }
+        
+        println("SpotifyApi: Recently played HTTP status: ${httpResponse.status}")
+        
+        if (!httpResponse.status.isSuccess()) {
+            val errorBody = httpResponse.bodyAsText()
+            println("SpotifyApi: Error response body: $errorBody")
+            throw Exception("Failed to fetch recently played tracks: ${httpResponse.status} - $errorBody")
+        }
+        
+        val responseBody = httpResponse.bodyAsText()
+        println("SpotifyApi: Recently played response body: $responseBody")
+        
+        return httpResponse.body()
     }
 }
 

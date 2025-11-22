@@ -1,6 +1,7 @@
 package com.chachadev.spotifycmpclone
 
 import android.app.Application
+import com.chachadev.spotifycmpclone.data.auth.initSettingsContext
 import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
 import com.chachadev.spotifycmpclone.di.SpotifyCredentials
 import com.chachadev.spotifycmpclone.utils.initAuthCodeStorage
@@ -8,6 +9,9 @@ import com.chachadev.spotifycmpclone.utils.initAuthCodeStorage
 class SpotifyCmpCloneApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        
+        // Initialize settings context for multiplatform-settings
+        initSettingsContext(this)
         
         // Initialize auth code storage with application context
         initAuthCodeStorage(this)

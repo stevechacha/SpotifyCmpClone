@@ -91,7 +91,8 @@ kotlin {
             implementation(libs.material3.window.size.class1.multiplatform)
             implementation(projects.core.common)
             implementation(libs.github.compose.webview.multiplatform)
-
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
 
         }
         commonTest.dependencies {

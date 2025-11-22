@@ -29,8 +29,15 @@ class ProfileViewModel(
                     // User is signed in, fetch profile
                     loadUserProfile()
                 } else if (!isSignedIn) {
-                    _uiState.value = _uiState.value.copy(isLoggedIn = false, user = null)
+                    _uiState.value = _uiState.value.copy(isLoggedIn = false, user = null, error = null)
                 }
+            }
+        }
+        
+        // Also check on init if user is already signed in
+        viewModelScope.launch {
+            if (authManager.isSignedIn.value && !_uiState.value.isLoggedIn) {
+                loadUserProfile()
             }
         }
     }
@@ -46,16 +53,40 @@ class ProfileViewModel(
     fun loadUserProfile() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            
+            // Check if still signed in before making API call
+            if (!authManager.isSignedIn.value) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isLoggedIn = false,
+                    user = null,
+                    error = "Session expired. Please sign in again."
+                )
+                return@launch
+            }
+            
             val userResult = repository.getCurrentUser()
             val user = userResult.getOrNull()
             val error = userResult.exceptionOrNull()?.message
             
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                isLoggedIn = true,
-                user = user,
-                error = error
-            )
+            // If API call failed with auth error, sign out
+            if (userResult.isFailure && error?.contains("401") == true || error?.contains("403") == true) {
+                println("ProfileViewModel: Auth error detected - signing out")
+                authManager.setSignedIn(false)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isLoggedIn = false,
+                    user = null,
+                    error = "Session expired. Please sign in again."
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isLoggedIn = authManager.isSignedIn.value,
+                    user = user,
+                    error = error
+                )
+            }
         }
     }
     

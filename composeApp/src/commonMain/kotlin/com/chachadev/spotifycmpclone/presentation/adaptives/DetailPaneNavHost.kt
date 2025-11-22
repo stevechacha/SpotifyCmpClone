@@ -68,6 +68,9 @@ fun DetailPaneNavHost(
                     },
                     onPlaylistClick = { playlistId ->
                         onNavigateToDetail(Screen.App.Playlist(playlistId))
+                    },
+                    onTrackClick = { trackId ->
+                        onTrackSelected(trackId)
                     }
                 )
             }

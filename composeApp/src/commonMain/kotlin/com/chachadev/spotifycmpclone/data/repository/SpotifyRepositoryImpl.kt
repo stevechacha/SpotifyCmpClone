@@ -131,11 +131,72 @@ class SpotifyRepositoryImpl(
         }
     }
 
+    override suspend fun getRecentlyPlayedTracks(limit: Int): Result<List<Track>> {
+        return runWithToken { token ->
+            try {
+                println("SpotifyRepositoryImpl: Fetching recently played tracks with limit=$limit")
+                println("SpotifyRepositoryImpl: Token length: ${token.length}")
+                
+                val response = api.getRecentlyPlayedTracks(
+                    limit = limit,
+                    accessToken = token
+                )
+                println("SpotifyRepositoryImpl: API response received")
+                println("SpotifyRepositoryImpl: Response href: ${response.href}")
+                println("SpotifyRepositoryImpl: Response limit: ${response.limit}")
+                println("SpotifyRepositoryImpl: Response next: ${response.next}")
+                println("SpotifyRepositoryImpl: Response total: ${response.total}")
+                println("SpotifyRepositoryImpl: Response cursors: ${response.cursors}")
+                println("SpotifyRepositoryImpl: Response items: ${response.items?.size ?: "null"}")
+                
+                val itemsList = response.items ?: emptyList()
+                println("SpotifyRepositoryImpl: Items list size: ${itemsList.size}")
+                
+                if (itemsList.isEmpty()) {
+                    println("SpotifyRepositoryImpl: WARNING - API returned empty items list")
+                    println("SpotifyRepositoryImpl: This could mean:")
+                    println("  - No tracks have been played recently")
+                    println("  - Token doesn't have 'user-read-recently-played' scope")
+                    println("  - Tracks were played on a different device/account")
+                }
+                
+                // Sort by playedAt timestamp (most recent first)
+                // Spotify API returns ISO 8601 format: "2024-01-15T10:30:00Z"
+                // ISO 8601 strings are lexicographically sortable, so we can use string comparison
+                val sortedItems = itemsList.sortedByDescending { item ->
+                    item.playedAt ?: "" // Empty string will sort to the end
+                }
+                
+                val tracks = sortedItems.mapNotNull { item ->
+                    if (item.track == null) {
+                        println("SpotifyRepositoryImpl: Item has null track, skipping")
+                        return@mapNotNull null
+                    }
+                    val trackResult = runCatching { item.track.toDomain() }
+                    trackResult.onFailure { error ->
+                        println("SpotifyRepositoryImpl: Failed to convert track: ${error.message}")
+                        error.printStackTrace()
+                    }
+                    trackResult.getOrNull()
+                }
+                println("SpotifyRepositoryImpl: Successfully converted ${tracks.size} tracks out of ${itemsList.size} items (sorted by most recent)")
+                tracks
+            } catch (e: Exception) {
+                println("SpotifyRepositoryImpl: Error fetching recently played tracks: ${e.message}")
+                println("SpotifyRepositoryImpl: Exception type: ${e::class.simpleName}")
+                e.printStackTrace()
+                throw e
+            }
+        }
+    }
+
     private suspend fun <T> runWithToken(block: suspend (String) -> T): Result<T> {
         return try {
             val token = authManager.getValidToken()
             Result.success(block(token))
         } catch (e: Exception) {
+            println("SpotifyRepositoryImpl: Error getting valid token: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }
