@@ -1,6 +1,7 @@
 package com.chachadev.spotifycmpclone
 
 import android.app.Application
+import com.chachadev.core.network.BuildKonfig
 import com.chachadev.spotifycmpclone.data.auth.initSettingsContext
 import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
 import com.chachadev.spotifycmpclone.di.SpotifyCredentials
@@ -16,8 +17,8 @@ class SpotifyCmpCloneApp : Application() {
         // Initialize auth code storage with application context
         initAuthCodeStorage(this)
         
-        val clientId = getString(R.string.spotify_client_id)
-        val clientSecret = getString(R.string.spotify_client_secret)
+        val clientId = BuildKonfig.CLIENT_ID
+        val clientSecret = BuildKonfig.CLIENT_SECRET
         val redirectUri = getString(R.string.spotify_redirect_uri)
         PlatformSpotifyCredentials.set(
             SpotifyCredentials(

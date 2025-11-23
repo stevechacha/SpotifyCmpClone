@@ -2,8 +2,10 @@ package com.chachadev.spotifycmpclone.domain.repository
 
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.Episode
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.SearchResult
+import com.chachadev.spotifycmpclone.domain.model.Show
 import com.chachadev.spotifycmpclone.domain.model.Track
 import com.chachadev.spotifycmpclone.domain.model.User
 
@@ -18,6 +20,8 @@ interface SpotifyRepository {
     suspend fun getArtistTopTracks(artistId: String): Result<List<Track>>
     suspend fun getAlbumTracks(albumId: String): Result<List<Track>>
     suspend fun getPlaylistTracks(playlistId: String): Result<List<Track>>
+    suspend fun getShow(showId: String): Result<Show>
+    suspend fun getShowEpisodes(showId: String, limit: Int = 50, offset: Int = 0): Result<List<Episode>>
     suspend fun getCurrentUser(): Result<User>
     suspend fun getRecentlyPlayedTracks(limit: Int = 20): Result<List<Track>>
 }

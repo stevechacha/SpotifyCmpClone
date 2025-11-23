@@ -1,7 +1,9 @@
 package com.chachadev.spotifycmpclone
 
+import com.chachadev.core.network.NetworkingConfig
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
+import com.chachadev.core.network.BuildKonfig
 import com.chachadev.spotifycmpclone.di.PlatformSpotifyCredentials
 import com.chachadev.spotifycmpclone.di.SpotifyCredentials
 import com.chachadev.spotifycmpclone.utils.storeAuthCode
@@ -11,8 +13,8 @@ import org.w3c.dom.Element
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-   val clientId: String = "76a675416313462c92babb568e064676"
-   val clientSecret: String = "25cb1fc758d14074be471a1c3cb45349"
+   val clientId: String = BuildKonfig.CLIENT_ID
+   val clientSecret: String = BuildKonfig.CLIENT_SECRET
    val redirectUri: String = "http://localhost:3000/callback"
     PlatformSpotifyCredentials.set(
         SpotifyCredentials(

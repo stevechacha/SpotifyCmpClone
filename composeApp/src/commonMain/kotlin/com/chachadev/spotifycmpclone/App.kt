@@ -48,29 +48,3 @@ fun App() {
 
     }
 }
-
-private data class NavigationItem(
-    val label: String,
-    val icon: ImageVector,
-    val screen: Screen
-)
-
-@Composable
-fun AppNavigation(
-    homeViewModel: HomeViewModel,
-    searchViewModel: SearchViewModel,
-    albumDetailViewModel: AlbumDetailViewModel,
-    playlistDetailViewModel: PlaylistDetailViewModel,
-    artistDetailViewModel: ArtistDetailViewModel,
-    trackDetailViewModel: TrackDetailViewModel,
-    profileViewModel: ProfileViewModel,
-    currentScreen: Screen.App,
-    onNavigate: () -> Unit
-) {
-    when (currentScreen) {
-        Screen.App.DashBoard -> {}
-        Screen.App.EmptyDetailScreenDestination -> {}
-        Screen.App -> {}
-    }
-
-}

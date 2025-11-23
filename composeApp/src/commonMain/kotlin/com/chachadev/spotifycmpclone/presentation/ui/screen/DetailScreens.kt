@@ -1,14 +1,17 @@
 package com.chachadev.spotifycmpclone.presentation.ui.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -33,12 +36,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.chachadev.core.common.screen.Portrait
 import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.Episode
 import com.chachadev.spotifycmpclone.domain.model.Playlist
+import com.chachadev.spotifycmpclone.domain.model.Show
 import com.chachadev.spotifycmpclone.domain.model.Track
 import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 import com.chachadev.spotifycmpclone.utils.ImageLoader
@@ -46,6 +52,7 @@ import com.chachadev.spotifycmpclone.presentation.ui.component.TrackItem
 import com.chachadev.spotifycmpclone.presentation.viewmodel.AlbumDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ArtistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.ShowDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -214,6 +221,148 @@ fun PlaylistDetailContent(
         onRetry = onRetry,
         onTrackSelected = onTrackSelected
     )
+}
+
+@Composable
+fun ShowDetailContent(
+    show: Show?,
+    episodes: List<Episode>,
+    isRefreshing: Boolean,
+    error: String?,
+    onRetry: () -> Unit,
+    onEpisodeSelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isRefreshing) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            show?.let {
+                item {
+                    DetailHeader(
+                        title = it.name ?: "Unknown Show",
+                        subtitle = it.description,
+                        metadata = listOfNotNull(
+                            it.publisher,
+                            it.totalEpisodes?.let { total -> "$total episodes" }
+                        ).takeIf { meta -> meta.isNotEmpty() }?.joinToString(separator = " • "),
+                        imageUrl = it.images?.firstOrNull()?.url
+                    )
+                }
+            }
+
+            error?.let { message ->
+                item {
+                    ErrorBanner(
+                        message = message,
+                        onRetry = onRetry
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    text = "Episodes",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            if (episodes.isEmpty()) {
+                item {
+                    Text(
+                        text = "This show does not have episodes we can display right now.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                items(episodes) { episode ->
+                    EpisodeItem(
+                        episode = episode,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { episode.id?.let { onEpisodeSelected(it) } }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EpisodeItem(
+    episode: Episode,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CoilImage(
+                imageUrl = episode.images?.firstOrNull()?.url ?: episode.show?.images?.firstOrNull()?.url,
+                contentDescription = episode.name,
+                modifier = Modifier.size(64.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = episode.name ?: "Unknown Episode",
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                episode.description?.let { description ->
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    episode.releaseDate?.let { date ->
+                        Text(
+                            text = date,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    episode.durationMs?.let { duration ->
+                        Text(
+                            text = formatDuration(duration),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable

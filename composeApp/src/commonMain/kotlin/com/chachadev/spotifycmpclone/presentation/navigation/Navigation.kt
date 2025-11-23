@@ -18,6 +18,7 @@ sealed interface Screen {
         @Serializable data class Album(val albumId: String) : Screen
         @Serializable data class Artist(val artistId: String) : Screen
         @Serializable data class Playlist(val playlistId: String) : Screen
+        @Serializable data class Show(val showId: String) : Screen
         @Serializable data object EmptyDetailScreenDestination : Screen
     }
 

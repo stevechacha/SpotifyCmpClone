@@ -2,10 +2,14 @@ package com.chachadev.spotifycmpclone.data.api
 
 import com.chachadev.spotifycmpclone.data.dto.AlbumDto
 import com.chachadev.spotifycmpclone.data.dto.ArtistDto
+import com.chachadev.spotifycmpclone.data.dto.ArtistsAlbumDto
+import com.chachadev.spotifycmpclone.data.dto.ArtistsDto
+import com.chachadev.spotifycmpclone.data.dto.EpisodeDto
 import com.chachadev.spotifycmpclone.data.dto.NewReleasesDto
 import com.chachadev.spotifycmpclone.data.dto.PlaylistDto
 import com.chachadev.spotifycmpclone.data.dto.RecentlyPlayedResponseDto
 import com.chachadev.spotifycmpclone.data.dto.SearchResultDto
+import com.chachadev.spotifycmpclone.data.dto.ShowDto
 import com.chachadev.spotifycmpclone.data.dto.TrackDto
 import com.chachadev.spotifycmpclone.data.dto.UserDto
 import io.ktor.client.HttpClient
@@ -65,6 +69,35 @@ class SpotifyApi(
         }.body()
     }
 
+    suspend fun getSeveralArtist(
+        ids: String,
+        accessToken: String
+    ): ArtistsDto {
+        return client.get("$baseUrl/artists") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+            parameter("ids", ids)
+        }.body()
+    }
+
+    suspend fun getArtistsAlbums(
+        id: String,
+        accessToken: String
+    ): ArtistsAlbumDto {
+        return client.get("$baseUrl/artists/$id/albums") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+        }.body()
+    }
+
+    suspend fun getArtistTopTracks(
+        artistId: String,
+        accessToken: String
+    ): TracksResponseDto {
+        return client.get("$baseUrl/artists/$artistId/top-tracks") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+            parameter("market", "US")
+        }.body()
+    }
+
     suspend fun getPlaylist(
         id: String,
         accessToken: String
@@ -98,15 +131,7 @@ class SpotifyApi(
         }.body()
     }
 
-    suspend fun getArtistTopTracks(
-        artistId: String,
-        accessToken: String
-    ): TracksResponseDto {
-        return client.get("$baseUrl/artists/$artistId/top-tracks") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-            parameter("market", "US")
-        }.body()
-    }
+
 
     suspend fun getAlbumTracks(
         albumId: String,
@@ -126,6 +151,28 @@ class SpotifyApi(
         }.body()
     }
 
+    suspend fun getShow(
+        showId: String,
+        accessToken: String
+    ): ShowDto {
+        return client.get("$baseUrl/shows/$showId") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+        }.body()
+    }
+
+    suspend fun getShowEpisodes(
+        showId: String,
+        accessToken: String,
+        limit: Int = 50,
+        offset: Int = 0
+    ): EpisodesResponseDto {
+        return client.get("$baseUrl/shows/$showId/episodes") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+            parameter("limit", limit)
+            parameter("offset", offset)
+        }.body()
+    }
+
     suspend fun getCurrentUser(
         accessToken: String
     ): UserDto {
@@ -134,20 +181,6 @@ class SpotifyApi(
         }.body()
     }
 
-    suspend fun getUserSavedAlbum(
-        accessToken: String
-    ): TracksResponseDto {
-        return client.get("$baseUrl/me/albums")
-            .body()
-    }
-
-    suspend fun getUserSavedTracks(
-        accessToken: String
-    ): TracksResponseDto {
-        return client.get("$baseUrl/me/tracks") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.body()
-    }
 
     suspend fun getRecentlyPlayedTracks(
         limit: Int = 20,
@@ -202,4 +235,14 @@ data class PlaylistTrackItemDto(
 @kotlinx.serialization.Serializable
 data class PlaylistTracksResponseDto(
     val items: List<PlaylistTrackItemDto>
+)
+
+@kotlinx.serialization.Serializable
+data class EpisodesResponseDto(
+    val items: List<EpisodeDto>? = null,
+    val limit: Int? = null,
+    val offset: Int? = null,
+    val total: Int? = null,
+    val next: String? = null,
+    val previous: String? = null
 )

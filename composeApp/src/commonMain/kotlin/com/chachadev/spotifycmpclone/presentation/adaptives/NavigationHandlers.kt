@@ -41,6 +41,14 @@ fun navigateToDetail(
                 false
             }
         }
+        destination is Screen.App.Show && currentRoute.contains("Show", ignoreCase = true) -> {
+            try {
+                val currentShow = currentBackStackEntry?.toRoute<Screen.App.Show>()
+                currentShow?.showId != destination.showId
+            } catch (e: Exception) {
+                false
+            }
+        }
         else -> false
     }
     

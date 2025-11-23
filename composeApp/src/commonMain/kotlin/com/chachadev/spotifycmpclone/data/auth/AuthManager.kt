@@ -3,8 +3,11 @@ package com.chachadev.spotifycmpclone.data.auth
 import com.chachadev.spotifycmpclone.utils.encodeUrlComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.header
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -22,6 +25,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.koin.core.scope.Scope
+import kotlin.getValue
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.seconds
@@ -315,4 +320,30 @@ class AuthManager(
     }
 }
 
+
+fun Scope.authorizationIntercept(client: HttpClient) {
+
+    val localConfigurationGateway: SettingsManager by inject()
+    val userRemoteGateway: AuthManager by inject()
+
+    client.plugin(HttpSend).intercept { request ->
+
+        val accessToken = localConfigurationGateway.getAccessToken()
+
+        request.headers {
+            append("Authorization", "Bearer $accessToken")
+        }
+
+        val originalCall = execute(request)
+        if (originalCall.response.status.value == 401 && accessToken?.isNotEmpty() == true) {
+            val access = userRemoteGateway.getValidToken()
+            val refresh = localConfigurationGateway.getRefreshToken()
+            localConfigurationGateway.setAccessToken(access)
+            refresh?.let { localConfigurationGateway.setRefreshToken(it) }
+            execute(request)
+        } else {
+            originalCall
+        }
+    }
+}
 

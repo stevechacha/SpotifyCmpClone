@@ -16,13 +16,27 @@ class BuildKonfigConventionPlugin: Plugin<Project> {
 
             extensions.configure<BuildKonfigExtension> {
                 packageName = target.pathToPackageName()
+                exposeObjectWithName = "BuildKonfig"
                 defaultConfigs {
-                    val apiKey = gradleLocalProperties(rootDir, rootProject.providers)
-                        .getProperty("API_KEY")
+                    val properties = gradleLocalProperties(rootDir, rootProject.providers)
+                    
+                    val apiKey = properties.getProperty("API_KEY")
                         ?: throw IllegalStateException(
                             "Missing API_KEY property in local.properties"
                         )
                     buildConfigField(FieldSpec.Type.STRING, "API_KEY", apiKey)
+                    
+                    val clientId = properties.getProperty("CLIENT_ID")
+                        ?: throw IllegalStateException(
+                            "Missing CLIENT_ID property in local.properties"
+                        )
+                    buildConfigField(FieldSpec.Type.STRING, "CLIENT_ID", clientId)
+                    
+                    val clientSecret = properties.getProperty("CLIENT_SECRET")
+                        ?: throw IllegalStateException(
+                            "Missing CLIENT_SECRET property in local.properties"
+                        )
+                    buildConfigField(FieldSpec.Type.STRING, "CLIENT_SECRET", clientSecret)
                 }
             }
         }

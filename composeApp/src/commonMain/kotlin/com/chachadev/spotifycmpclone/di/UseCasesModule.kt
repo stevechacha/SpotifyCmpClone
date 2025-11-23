@@ -10,6 +10,8 @@ import com.chachadev.spotifycmpclone.domain.usecase.GetNewReleasesUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetPlaylistDetailsUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetPlaylistTracksUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetRecentlyPlayedTracksUseCase
+import com.chachadev.spotifycmpclone.domain.usecase.GetShowDetailsUseCase
+import com.chachadev.spotifycmpclone.domain.usecase.GetShowEpisodesUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetTrackDetailsUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetUserSavedAlbumsUseCase
 import com.chachadev.spotifycmpclone.domain.usecase.GetUserSavedEpisodesUseCase
@@ -28,6 +30,8 @@ val useCaseModule = module {
     factoryOf(::GetPlaylistDetailsUseCase)
     factoryOf(::GetPlaylistTracksUseCase)
     factoryOf(::GetArtistDetailsUseCase)
+    factoryOf(::GetShowDetailsUseCase)
+    factoryOf(::GetShowEpisodesUseCase)
     factoryOf(::GetTrackDetailsUseCase)
     factoryOf(::GetCurrentUserPlaylistsUseCase)
     factoryOf(::GetUserSavedAlbumsUseCase)

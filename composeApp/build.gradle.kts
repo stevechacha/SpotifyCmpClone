@@ -67,6 +67,10 @@ kotlin {
         }
 */
         commonMain.dependencies {
+            implementation(projects.core.data)
+            implementation(projects.core.domain)
+            implementation(projects.core.network)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

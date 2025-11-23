@@ -7,6 +7,7 @@ import com.chachadev.spotifycmpclone.presentation.viewmodel.LibraryViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.PlaylistDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
+import com.chachadev.spotifycmpclone.presentation.viewmodel.ShowDetailViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.TrackDetailViewModel
 import org.koin.dsl.module
 
@@ -17,6 +18,7 @@ val screenViewModelModule = module {
     factory { AlbumDetailViewModel(get(), get()) }
     factory { PlaylistDetailViewModel(get(), get()) }
     factory { ArtistDetailViewModel(get(), get()) }
+    factory { ShowDetailViewModel(get(), get()) }
     factory { TrackDetailViewModel(get()) }
     factory { ProfileViewModel(get(), get()) }
     factory { LibraryViewModel(get(), get(), get(), get(), get()) }

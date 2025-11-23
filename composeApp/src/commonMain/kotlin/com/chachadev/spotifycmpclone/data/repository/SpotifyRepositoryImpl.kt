@@ -4,8 +4,10 @@ import com.chachadev.spotifycmpclone.data.api.SpotifyApi
 import com.chachadev.spotifycmpclone.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.Episode
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.SearchResult
+import com.chachadev.spotifycmpclone.domain.model.Show
 import com.chachadev.spotifycmpclone.domain.model.Track
 import com.chachadev.spotifycmpclone.domain.model.User
 import com.chachadev.spotifycmpclone.domain.repository.SpotifyRepository
@@ -113,6 +115,24 @@ class SpotifyRepositoryImpl(
                 accessToken = token
             )
             response.items.mapNotNull { it.track.toDomain() }
+        }
+    }
+
+    override suspend fun getShow(showId: String): Result<Show> {
+        return runWithToken { token ->
+            api.getShow(showId, token).toDomain()
+        }
+    }
+
+    override suspend fun getShowEpisodes(showId: String, limit: Int, offset: Int): Result<List<Episode>> {
+        return runWithToken { token ->
+            val response = api.getShowEpisodes(
+                showId = showId,
+                accessToken = token,
+                limit = limit,
+                offset = offset
+            )
+            (response.items ?: emptyList()).map { it.toDomain() }
         }
     }
 

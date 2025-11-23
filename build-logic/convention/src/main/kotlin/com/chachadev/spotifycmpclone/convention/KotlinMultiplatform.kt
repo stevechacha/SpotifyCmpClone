@@ -16,7 +16,12 @@ internal fun Project.configureKotlinMultiplatform() {
     configureDesktopTarget()
     configureBrowserTarget()
 
+
     extensions.configure<KotlinMultiplatformExtension> {
+        wasmJs {
+            browser()
+            binaries.executable()
+        }
         listOf(
             iosX64(),
             iosArm64(),

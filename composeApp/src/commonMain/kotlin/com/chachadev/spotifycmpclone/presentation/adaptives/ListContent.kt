@@ -68,7 +68,24 @@ fun ListContent(
             )
         }
         composable<Screen.App.DashBoard.Library> {
-            LibraryScreen(
+            DesktopLibrary(
+                onAlbumClick = { albumId ->
+                    onNavigateToDetail(Screen.App.Album(albumId))
+                },
+                onPlaylistClick = { playlistId ->
+                    onNavigateToDetail(Screen.App.Playlist(playlistId))
+                },
+                onArtistClick = { artistId ->
+                    onNavigateToDetail(Screen.App.Artist(artistId))
+                },
+                onShowClick = { showId ->
+                    onNavigateToDetail(Screen.App.Show(showId))
+                },
+                onEpisodeClick = { episodeId ->
+                    // TODO: Navigate to Episode detail screen when implemented
+                }
+            )
+            /*LibraryScreen(
                 onAlbumClick = { albumId ->
                     onNavigateToDetail(Screen.App.Album(albumId))
                 },
@@ -81,7 +98,7 @@ fun ListContent(
                 onEpisodeClick = { episodeId ->
                     // TODO: Implement episode detail screen navigation
                 }
-            )
+            )*/
         }
         composable<Screen.App.DashBoard.Profile> (
             deepLinks = listOf(

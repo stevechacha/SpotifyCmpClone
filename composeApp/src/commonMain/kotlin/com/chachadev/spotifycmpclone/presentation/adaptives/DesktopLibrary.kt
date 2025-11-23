@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,22 +40,72 @@ import androidx.compose.ui.unit.dp
 import com.chachadev.spotifycmpclone.domain.model.Playlist
 import com.chachadev.spotifycmpclone.domain.model.Album
 import com.chachadev.spotifycmpclone.domain.model.Artist
+import com.chachadev.spotifycmpclone.domain.model.PlaylistItem
 import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
+import com.chachadev.spotifycmpclone.presentation.viewmodel.LibraryViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DesktopLibrary(
+    viewModel: LibraryViewModel = koinViewModel(),
     onAlbumClick: (String) -> Unit = {},
     onPlaylistClick: (String) -> Unit = {},
-    onArtistClick: (String) -> Unit = {}
+    onArtistClick: (String) -> Unit = {},
+    onShowClick: (String) -> Unit = {},
+    onEpisodeClick: (String) -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    
     var selectedFilter by remember { mutableStateOf(LibraryFilter.Playlists) }
     var searchQuery by remember { mutableStateOf("") }
     var sortOption by remember { mutableStateOf(SortOption.Recents) }
     
-    // Mock data - replace with actual ViewModel/Repository calls
-    val playlists = remember { emptyList<Playlist>() }
-    val albums = remember { emptyList<Album>() }
-    val artists = remember { emptyList<Artist>() }
+    // Convert PlaylistItem to Playlist for compatibility
+    val playlists = remember(uiState.playlists) {
+        uiState.playlists.mapNotNull { playlistItem ->
+            // Convert PlaylistItem to Playlist
+            val id = playlistItem.id ?: return@mapNotNull null
+            val name = playlistItem.name ?: return@mapNotNull null
+            Playlist(
+                id = id,
+                name = name,
+                description = playlistItem.description,
+                images = playlistItem.images ?: emptyList(),
+                owner = playlistItem.owner?.let { owner ->
+                    com.chachadev.spotifycmpclone.domain.model.PlaylistOwner(
+                        id = owner.id ?: "",
+                        displayName = owner.displayName
+                    )
+                },
+                tracks = playlistItem.tracks?.let { tracks ->
+                    com.chachadev.spotifycmpclone.domain.model.PlaylistTracks(
+                        total = tracks.total ?: 0
+                    )
+                },
+                externalUrls = playlistItem.externalUrls
+            )
+        }
+    }
+    
+    val albums = remember(uiState.savedAlbums) {
+        uiState.savedAlbums
+    }
+    
+    // Extract unique artists from saved albums
+    val artists = remember(albums) {
+        albums.flatMap { album ->
+            album.artists
+        }.distinctBy { it.id }
+    }
+    
+    // Get shows (podcasts) and episodes (downloads) from ViewModel
+    val shows = remember(uiState.savedShows) {
+        uiState.savedShows
+    }
+    
+    val episodes = remember(uiState.savedEpisodes) {
+        uiState.savedEpisodes
+    }
     
     Box(
         modifier = Modifier.fillMaxSize()
@@ -77,17 +132,75 @@ fun DesktopLibrary(
                 onSortOptionChange = { sortOption = it }
             )
             
-            // Content List
-            LibraryContentList(
-                filter = selectedFilter,
-                searchQuery = searchQuery,
-                playlists = playlists,
-                albums = albums,
-                artists = artists,
-                onAlbumClick = onAlbumClick,
-                onPlaylistClick = onPlaylistClick,
-                onArtistClick = onArtistClick
-            )
+            // Loading and Error States
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                uiState.error?.let { error ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Text(
+                            text = "Error: $error",
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+                
+                // Sign in prompt
+                if (uiState.requiresSignIn) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Sign in to view your library",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = "Your saved albums, playlists, shows, and episodes will appear here once you sign in with Spotify.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 16.dp),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                } else {
+                    // Content List
+                    LibraryContentList(
+                        filter = selectedFilter,
+                        searchQuery = searchQuery,
+                        playlists = playlists,
+                        albums = albums,
+                        artists = artists,
+                        shows = shows,
+                        episodes = episodes,
+                        onAlbumClick = onAlbumClick,
+                        onPlaylistClick = onPlaylistClick,
+                        onArtistClick = onArtistClick,
+                        onShowClick = onShowClick,
+                        onEpisodeClick = onEpisodeClick
+                    )
+                }
+            }
         }
     }
 }
@@ -223,17 +336,25 @@ private fun LibraryContentList(
     playlists: List<Playlist>,
     albums: List<Album>,
     artists: List<Artist>,
+    shows: List<com.chachadev.spotifycmpclone.domain.model.Show>,
+    episodes: List<com.chachadev.spotifycmpclone.domain.model.Episode>,
     onAlbumClick: (String) -> Unit,
     onPlaylistClick: (String) -> Unit,
-    onArtistClick: (String) -> Unit
+    onArtistClick: (String) -> Unit,
+    onShowClick: (String) -> Unit,
+    onEpisodeClick: (String) -> Unit
 ) {
-    val filteredItems = remember(filter, searchQuery, playlists, albums, artists) {
+    val filteredItems = remember(filter, searchQuery, playlists, albums, artists, shows, episodes) {
         val items = when (filter) {
             LibraryFilter.Playlists -> playlists.map { LibraryItem.Playlist(it) }
             LibraryFilter.Albums -> albums.map { LibraryItem.Album(it) }
             LibraryFilter.Artists -> artists.map { LibraryItem.Artist(it) }
-            LibraryFilter.Podcasts -> emptyList() // TODO: Add podcast support
-            LibraryFilter.Downloads -> emptyList() // TODO: Add downloads support
+            LibraryFilter.Podcasts -> shows.mapNotNull { show ->
+                show.id?.let { LibraryItem.Show(show) }
+            }
+            LibraryFilter.Downloads -> episodes.mapNotNull { episode ->
+                episode.id?.let { LibraryItem.Episode(episode) }
+            }
         }
         
         if (searchQuery.isBlank()) {
@@ -245,7 +366,10 @@ private fun LibraryContentList(
                     is LibraryItem.Album -> it.album.name.contains(searchQuery, ignoreCase = true) ||
                             it.album.artists.any { artist -> artist.name.contains(searchQuery, ignoreCase = true) }
                     is LibraryItem.Artist -> it.artist.name.contains(searchQuery, ignoreCase = true)
-                    is LibraryItem.Podcast -> false // TODO
+                    is LibraryItem.Show -> it.show.name?.contains(searchQuery, ignoreCase = true) == true ||
+                            it.show.publisher?.contains(searchQuery, ignoreCase = true) == true
+                    is LibraryItem.Episode -> it.episode.name?.contains(searchQuery, ignoreCase = true) == true ||
+                            it.episode.show?.name?.contains(searchQuery, ignoreCase = true) == true
                 }
             }
         }
@@ -262,14 +386,17 @@ private fun LibraryContentList(
                 is LibraryItem.Playlist -> "playlist_${item.playlist.id}"
                 is LibraryItem.Album -> "album_${item.album.id}"
                 is LibraryItem.Artist -> "artist_${item.artist.id}"
-                is LibraryItem.Podcast -> "podcast_${item.id}"
+                is LibraryItem.Show -> "show_${item.show.id}"
+                is LibraryItem.Episode -> "episode_${item.episode.id}"
             }}
         ) { item ->
             LibraryItemRow(
                 item = item,
                 onAlbumClick = onAlbumClick,
                 onPlaylistClick = onPlaylistClick,
-                onArtistClick = onArtistClick
+                onArtistClick = onArtistClick,
+                onShowClick = onShowClick,
+                onEpisodeClick = onEpisodeClick
             )
         }
     }
@@ -279,7 +406,8 @@ private sealed class LibraryItem {
     data class Playlist(val playlist: com.chachadev.spotifycmpclone.domain.model.Playlist) : LibraryItem()
     data class Album(val album: com.chachadev.spotifycmpclone.domain.model.Album) : LibraryItem()
     data class Artist(val artist: com.chachadev.spotifycmpclone.domain.model.Artist) : LibraryItem()
-    data class Podcast(val id: String, val name: String) : LibraryItem() // Placeholder
+    data class Show(val show: com.chachadev.spotifycmpclone.domain.model.Show) : LibraryItem()
+    data class Episode(val episode: com.chachadev.spotifycmpclone.domain.model.Episode) : LibraryItem()
 }
 
 @Composable
@@ -287,7 +415,9 @@ private fun LibraryItemRow(
     item: LibraryItem,
     onAlbumClick: (String) -> Unit,
     onPlaylistClick: (String) -> Unit,
-    onArtistClick: (String) -> Unit
+    onArtistClick: (String) -> Unit,
+    onShowClick: (String) -> Unit,
+    onEpisodeClick: (String) -> Unit
 ) {
     val (imageUrl, title, subtitle, onClick) = when (item) {
         is LibraryItem.Playlist -> {
@@ -323,8 +453,41 @@ private fun LibraryItemRow(
                 onArtistClick(item.artist.id)
             }
         }
-        is LibraryItem.Podcast -> {
-            Quadruple(null, item.name, "Podcast") { /* TODO */ }
+        is LibraryItem.Show -> {
+            val imageUrl = item.show.images?.firstOrNull()?.url
+            val subtitle = buildString {
+                append("Podcast")
+                item.show.publisher?.let { publisher ->
+                    append(" • $publisher")
+                }
+                item.show.totalEpisodes?.let { total ->
+                    append(" • $total episodes")
+                }
+            }
+            val showId = item.show.id ?: ""
+            Quadruple(imageUrl, item.show.name ?: "Unknown Show", subtitle) {
+                if (showId.isNotEmpty()) {
+                    onShowClick(showId)
+                }
+            }
+        }
+        is LibraryItem.Episode -> {
+            val imageUrl = item.episode.images?.firstOrNull()?.url ?: item.episode.show?.images?.firstOrNull()?.url
+            val subtitle = buildString {
+                append("Episode")
+                item.episode.show?.name?.let { showName ->
+                    append(" • $showName")
+                }
+                item.episode.releaseDate?.let { date ->
+                    append(" • $date")
+                }
+            }
+            val episodeId = item.episode.id ?: ""
+            Quadruple(imageUrl, item.episode.name ?: "Unknown Episode", subtitle) {
+                if (episodeId.isNotEmpty()) {
+                    onEpisodeClick(episodeId)
+                }
+            }
         }
     }
     

@@ -164,7 +164,14 @@ fun SpotifyCmpCloneAdaptiveLayout(
                         sharedSearchQuery = ""
                     }
                 )
-                else DesktopLibrary()
+                else DesktopLibrary(
+                    onShowClick = { showId ->
+                        navigateToDetail(Screen.App.Show(showId), detailNavController)
+                    },
+                    onEpisodeClick = { episodeId ->
+                        // TODO: Navigate to Episode detail screen when implemented
+                    }
+                )
             },
             detailPane = {
                 DetailPaneNavHost(

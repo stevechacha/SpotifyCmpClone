@@ -16,6 +16,7 @@ import com.chachadev.spotifycmpclone.presentation.ui.screen.ArtistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.PlaylistScreen
 import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
+import com.chachadev.spotifycmpclone.presentation.ui.screen.ShowScreen
 import com.chachadev.core.common.screen.Landscape
 import com.chachadev.core.common.screen.ScreenOrientation
 
@@ -115,6 +116,24 @@ fun DetailPaneNavHost(
                 orientation = orientation,
                 playlistId = playlist.playlistId,
                 onTrackSelected = onTrackSelected, // Pass to track detail pane
+                onBack = {
+                    // Navigate detail pane to empty screen
+                    // Also navigate list pane back to Home
+                    navController.navigate(Screen.App.EmptyDetailScreenDestination) {
+                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable<Screen.App.Show> { backStackEntry ->
+            val show = backStackEntry.toRoute<Screen.App.Show>()
+            ShowScreen(
+                orientation = orientation,
+                showId = show.showId,
+                onEpisodeSelected = { episodeId ->
+                    // TODO: Navigate to episode detail when implemented
+                },
                 onBack = {
                     // Navigate detail pane to empty screen
                     // Also navigate list pane back to Home
