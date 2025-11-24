@@ -1,5 +1,6 @@
-package com.chachadev.core.network
+package com.chachadev.core.network.utils
 
+import com.chachadev.core.network.BuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.DefaultRequest

@@ -12,6 +12,7 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(libs.kotlinx.coroutinesCore)
 
         }
         iosMain.dependencies {

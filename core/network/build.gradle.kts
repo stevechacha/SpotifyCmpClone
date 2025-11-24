@@ -7,17 +7,6 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-//buildkonfig {
-//    defaultConfigs {
-//        val apiKey = gradleLocalProperties(rootDir, rootProject.providers)
-//            .getProperty("API_KEY")
-//            ?: throw IllegalStateException(
-//                "Missing API_KEY property in local.properties"
-//            )
-//        buildConfigField(FieldSpec.Type.STRING, "API_KEY", apiKey)
-//    }
-//}
-
 kotlin {
 
     sourceSets {
@@ -31,6 +20,8 @@ kotlin {
             implementation(projects.core.domain)
             implementation(libs.bundles.ktor.common)
             implementation(libs.bundles.koin.common)
+            implementation(libs.kotlinx.serializationJson)
+            implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kermit)
         }
         iosMain.dependencies {

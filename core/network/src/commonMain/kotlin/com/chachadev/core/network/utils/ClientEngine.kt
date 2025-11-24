@@ -1,4 +1,4 @@
-package com.chachadev.core.network
+package com.chachadev.core.network.utils
 
 import io.ktor.client.engine.HttpClientEngine
 

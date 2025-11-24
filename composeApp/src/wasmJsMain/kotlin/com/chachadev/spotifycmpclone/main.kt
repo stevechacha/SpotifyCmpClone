@@ -1,6 +1,5 @@
 package com.chachadev.spotifycmpclone
 
-import com.chachadev.core.network.NetworkingConfig
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import com.chachadev.core.network.BuildKonfig
