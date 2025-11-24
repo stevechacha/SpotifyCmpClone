@@ -1,5 +1,6 @@
 package com.chachadev.spotifycmpclone.di
 
+import com.chachadev.core.network.BuildKonfig
 import com.chachadev.spotifycmpclone.data.api.LibraryApiService
 import com.chachadev.spotifycmpclone.data.api.SpotifyApi
 import com.chachadev.spotifycmpclone.data.auth.AuthManager
@@ -28,8 +29,8 @@ val apiModule = module {
     single {
         AuthManager(
             httpClient = get(),
-            clientId = getProperty("spotify_client_id", ""),
-            clientSecret = getProperty("spotify_client_secret", ""),
+            clientId = BuildKonfig.CLIENT_ID ,//getProperty("spotify_client_id", ""),
+            clientSecret = BuildKonfig.CLIENT_SECRET, //getProperty("spotify_client_secret", ""),
             redirectUri = getProperty("spotify_redirect_uri", ""),
             settingsManager = get()
         )

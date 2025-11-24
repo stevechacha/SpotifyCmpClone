@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,7 +36,9 @@ fun PortraitNavigationBar(
                 NavigationItem("Profile", Icons.Default.Person, Screen.App.DashBoard.Profile)
             )
         }
-        
+
+
+
         NavigationBar {
             navigationItems.forEach { destination ->
                 val isSelected = when (destination.screen) {
@@ -95,7 +98,7 @@ fun PortraitNavigationBar(
     }
 }
 
-private data class NavigationItem(
+data class NavigationItem(
     val label: String,
     val icon: ImageVector,
     val screen: Screen

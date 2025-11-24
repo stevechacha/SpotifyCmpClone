@@ -1,11 +1,20 @@
 package com.chachadev.spotifycmpclone.presentation.adaptives
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,12 +24,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chachadev.core.common.screen.Landscape
 import com.chachadev.core.common.screen.Portrait
 import com.chachadev.core.common.screen.ScreenOrientation
 import com.chachadev.spotifycmpclone.presentation.navigation.Screen
+import com.chachadev.spotifycmpclone.presentation.ui.screen.HomeScreen
+import com.chachadev.spotifycmpclone.presentation.ui.screen.SearchScreen
 import com.chachadev.spotifycmpclone.utils.DeviceConfiguration
 import com.chachadev.spotifycmpclone.utils.createNoSpacingPaneScaffoldDirective
 import com.chachadev.spotifycmpclone.utils.currentDeviceConfiguration
@@ -43,25 +55,25 @@ fun SpotifyCmpCloneAdaptiveLayout(
     var currentListScreen by remember { mutableStateOf<Screen>(Screen.App.DashBoard.Home) }
     val detailBackStackEntry by detailNavController.currentBackStackEntryAsState()
     val trackBackStackEntry by trackNavController.currentBackStackEntryAsState()
-    
+
     val isDetailFlowActive = remember(detailBackStackEntry) {
         detailBackStackEntry?.destination?.route?.let { route ->
             !route.contains("EmptyDetailScreenDestination", ignoreCase = true) &&
             route.isNotEmpty()
         } ?: false
     }
-    
+
     val isTrackFlowActive = remember(trackBackStackEntry) {
         trackBackStackEntry?.destination?.route?.let { route ->
             !route.contains("EmptyDetailScreenDestination", ignoreCase = true) &&
             route.isNotEmpty()
         } ?: false
     }
-    
+
     val scope = rememberCoroutineScope()
 
     val deviceConfiguration = currentDeviceConfiguration()
-    
+
     // Shared search query state for landscape top bar and SearchScreen
     var sharedSearchQuery by remember { mutableStateOf("") }
     /*val isWideScreen = deviceConfiguration.isWideScreen
@@ -134,6 +146,7 @@ fun SpotifyCmpCloneAdaptiveLayout(
             )
         }
     )
+
     NavigationSuiteScaffold(
         navigationItems = {
             PortraitNavigationBar(
