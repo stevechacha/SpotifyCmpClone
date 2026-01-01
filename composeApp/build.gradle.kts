@@ -11,31 +11,6 @@ plugins {
 }
 
 kotlin {
-    /*androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-    
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-    
-    jvm()
-
-     */
-    
-   /* js {
-        browser()
-        binaries.executable()
-    }
-    */
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
@@ -50,9 +25,6 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
-
-
-
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
@@ -70,6 +42,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.domain)
             implementation(projects.core.network)
+            implementation(projects.core.database)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

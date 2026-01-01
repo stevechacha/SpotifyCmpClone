@@ -26,7 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
+import com.chachadev.core.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
 import com.chachadev.spotifycmpclone.utils.clearStoredAuthCode

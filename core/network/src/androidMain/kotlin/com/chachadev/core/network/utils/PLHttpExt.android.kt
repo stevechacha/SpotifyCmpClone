@@ -7,15 +7,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import utils.DataError
-import utils.Result
+import com.chachadev.core.domain.utils.DataError
+import com.chachadev.core.domain.utils.Result
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 actual suspend fun <T> platformSafeCall(
     execute: suspend () -> HttpResponse,
-    handleResponse: suspend (HttpResponse) -> Result<T, DataError.Remote>
+    handleResponse: suspend (HttpResponse) -> com.chachadev.core.domain.utils.Result<T, DataError.Remote>
 ): Result<T, DataError.Remote> {
     return withContext(Dispatchers.IO) {
         try {

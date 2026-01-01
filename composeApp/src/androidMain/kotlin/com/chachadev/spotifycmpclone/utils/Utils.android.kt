@@ -1,6 +1,6 @@
 package com.chachadev.spotifycmpclone.utils
 
-import com.chachadev.spotifycmpclone.domain.model.Art
+import com.chachadev.core.domain.model.Art
 
 actual val Art.artUrl: String
     get() = this.webImage.url

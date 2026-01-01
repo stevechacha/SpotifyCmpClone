@@ -2,12 +2,12 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.domain.model.Album
-import com.chachadev.spotifycmpclone.domain.model.Playlist
-import com.chachadev.spotifycmpclone.domain.model.Track
-import com.chachadev.spotifycmpclone.domain.usecase.GetFeaturedPlaylistsUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetNewReleasesUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetRecentlyPlayedTracksUseCase
+import com.chachadev.core.domain.model.Album
+import com.chachadev.core.domain.model.Playlist
+import com.chachadev.core.domain.model.Track
+import com.chachadev.core.domain.usecase.GetFeaturedPlaylistsUseCase
+import com.chachadev.core.domain.usecase.GetNewReleasesUseCase
+import com.chachadev.core.domain.usecase.GetRecentlyPlayedTracksUseCase
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 

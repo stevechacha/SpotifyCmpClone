@@ -2,13 +2,13 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
-import com.chachadev.spotifycmpclone.domain.model.Album
-import com.chachadev.spotifycmpclone.domain.model.PlaylistItem
-import com.chachadev.spotifycmpclone.domain.usecase.GetCurrentUserPlaylistsUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetUserSavedAlbumsUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetUserSavedEpisodesUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetUserSavedShowsUseCase
+import com.chachadev.core.data.auth.AuthManager
+import com.chachadev.core.domain.model.Album
+import com.chachadev.core.domain.model.PlaylistItem
+import com.chachadev.core.domain.usecase.GetCurrentUserPlaylistsUseCase
+import com.chachadev.core.domain.usecase.GetUserSavedAlbumsUseCase
+import com.chachadev.core.domain.usecase.GetUserSavedEpisodesUseCase
+import com.chachadev.core.domain.usecase.GetUserSavedShowsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -80,8 +80,8 @@ data class LibraryUiState(
     val isLoading: Boolean = false,
     val savedAlbums: List<Album> = emptyList(),
     val playlists: List<PlaylistItem> = emptyList(),
-    val savedShows: List<com.chachadev.spotifycmpclone.domain.model.Show> = emptyList(),
-    val savedEpisodes: List<com.chachadev.spotifycmpclone.domain.model.Episode> = emptyList(),
+    val savedShows: List<com.chachadev.core.domain.model.Show> = emptyList(),
+    val savedEpisodes: List<com.chachadev.core.domain.model.Episode> = emptyList(),
     val error: String? = null,
     val requiresSignIn: Boolean = false
 )

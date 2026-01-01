@@ -37,10 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.chachadev.spotifycmpclone.domain.model.Playlist
-import com.chachadev.spotifycmpclone.domain.model.Album
-import com.chachadev.spotifycmpclone.domain.model.Artist
-import com.chachadev.spotifycmpclone.domain.model.PlaylistItem
+import com.chachadev.core.domain.model.Playlist
+import com.chachadev.core.domain.model.Album
+import com.chachadev.core.domain.model.Artist
+import com.chachadev.core.domain.model.PlaylistItem
 import com.chachadev.spotifycmpclone.presentation.ui.component.CoilImage
 import com.chachadev.spotifycmpclone.presentation.viewmodel.LibraryViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -72,13 +72,13 @@ fun DesktopLibrary(
                 description = playlistItem.description,
                 images = playlistItem.images ?: emptyList(),
                 owner = playlistItem.owner?.let { owner ->
-                    com.chachadev.spotifycmpclone.domain.model.PlaylistOwner(
+                    com.chachadev.core.domain.model.PlaylistOwner(
                         id = owner.id ?: "",
                         displayName = owner.displayName
                     )
                 },
                 tracks = playlistItem.tracks?.let { tracks ->
-                    com.chachadev.spotifycmpclone.domain.model.PlaylistTracks(
+                    com.chachadev.core.domain.model.PlaylistTracks(
                         total = tracks.total ?: 0
                     )
                 },
@@ -336,8 +336,8 @@ private fun LibraryContentList(
     playlists: List<Playlist>,
     albums: List<Album>,
     artists: List<Artist>,
-    shows: List<com.chachadev.spotifycmpclone.domain.model.Show>,
-    episodes: List<com.chachadev.spotifycmpclone.domain.model.Episode>,
+    shows: List<com.chachadev.core.domain.model.Show>,
+    episodes: List<com.chachadev.core.domain.model.Episode>,
     onAlbumClick: (String) -> Unit,
     onPlaylistClick: (String) -> Unit,
     onArtistClick: (String) -> Unit,
@@ -403,11 +403,11 @@ private fun LibraryContentList(
 }
 
 private sealed class LibraryItem {
-    data class Playlist(val playlist: com.chachadev.spotifycmpclone.domain.model.Playlist) : LibraryItem()
-    data class Album(val album: com.chachadev.spotifycmpclone.domain.model.Album) : LibraryItem()
-    data class Artist(val artist: com.chachadev.spotifycmpclone.domain.model.Artist) : LibraryItem()
-    data class Show(val show: com.chachadev.spotifycmpclone.domain.model.Show) : LibraryItem()
-    data class Episode(val episode: com.chachadev.spotifycmpclone.domain.model.Episode) : LibraryItem()
+    data class Playlist(val playlist: com.chachadev.core.domain.model.Playlist) : LibraryItem()
+    data class Album(val album: com.chachadev.core.domain.model.Album) : LibraryItem()
+    data class Artist(val artist: com.chachadev.core.domain.model.Artist) : LibraryItem()
+    data class Show(val show: com.chachadev.core.domain.model.Show) : LibraryItem()
+    data class Episode(val episode: com.chachadev.core.domain.model.Episode) : LibraryItem()
 }
 
 @Composable

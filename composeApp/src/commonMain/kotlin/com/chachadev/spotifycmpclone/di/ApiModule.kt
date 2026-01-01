@@ -1,12 +1,12 @@
 package com.chachadev.spotifycmpclone.di
 
+import com.chachadev.core.database.auth.SettingsManager
 import com.chachadev.core.network.BuildKonfig
-import com.chachadev.spotifycmpclone.data.api.LibraryApiService
-import com.chachadev.spotifycmpclone.data.api.SpotifyApi
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
-import com.chachadev.spotifycmpclone.data.auth.SettingsManager
+import com.chachadev.core.network.datasource.SpotifyRemoteDataSource
+import com.chachadev.core.network.datasource.SpotifyRemoteDataSourceImpl
+import com.chachadev.core.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.data.auth.createSettings
-import com.chachadev.spotifycmpclone.data.network.HttpClientFactory
+import com.chachadev.core.network.factory.HttpClientFactory
 import com.russhwolf.settings.Settings
 import org.koin.dsl.module
 
@@ -36,15 +36,9 @@ val apiModule = module {
         )
     }
 
-    single {
-        SpotifyApi(
-            client = get(),
-            baseUrl = "https://api.spotify.com/v1"
-        )
-    }
-
-    single {
-        LibraryApiService(
+    // Provide SpotifyRemoteDataSource
+    single<SpotifyRemoteDataSource> {
+        SpotifyRemoteDataSourceImpl(
             client = get(),
             baseUrl = "https://api.spotify.com/v1"
         )

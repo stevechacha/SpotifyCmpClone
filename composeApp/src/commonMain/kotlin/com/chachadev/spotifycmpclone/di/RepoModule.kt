@@ -1,23 +1,23 @@
 package com.chachadev.spotifycmpclone.di
 
-import com.chachadev.spotifycmpclone.data.repository.LibraryRepositoryImpl
-import com.chachadev.spotifycmpclone.data.repository.SpotifyRepositoryImpl
-import com.chachadev.spotifycmpclone.domain.repository.LibraryRepository
-import com.chachadev.spotifycmpclone.domain.repository.SpotifyRepository
+import com.chachadev.core.data.repository.LibraryRepositoryImpl
+import com.chachadev.core.data.repository.SpotifyRepositoryImpl
+import com.chachadev.core.domain.repository.LibraryRepository
+import com.chachadev.core.domain.repository.SpotifyRepository
 import org.koin.dsl.module
 
 val repoModule = module {
     single<SpotifyRepository> {
         SpotifyRepositoryImpl(
-            api = get(),
-            authManager = get()
+            remoteDataSource = get(),
+            authProvider = get<com.chachadev.core.data.auth.AuthManager>()
         )
     }
 
     single<LibraryRepository> {
         LibraryRepositoryImpl(
-            libraryApiService = get(),
-            authManager = get()
+            remoteDataSource = get(),
+            authProvider = get<com.chachadev.core.data.auth.AuthManager>()
         )
     }
 }

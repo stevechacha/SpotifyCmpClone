@@ -2,8 +2,8 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.domain.model.SearchResult
-import com.chachadev.spotifycmpclone.domain.usecase.SearchUseCase
+import com.chachadev.core.domain.model.SearchResult
+import com.chachadev.core.domain.usecase.SearchUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

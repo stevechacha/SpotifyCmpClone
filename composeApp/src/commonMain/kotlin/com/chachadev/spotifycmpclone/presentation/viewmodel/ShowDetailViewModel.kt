@@ -2,10 +2,10 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.domain.model.Episode
-import com.chachadev.spotifycmpclone.domain.model.Show
-import com.chachadev.spotifycmpclone.domain.usecase.GetShowDetailsUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetShowEpisodesUseCase
+import com.chachadev.core.domain.model.Episode
+import com.chachadev.core.domain.model.Show
+import com.chachadev.core.domain.usecase.GetShowDetailsUseCase
+import com.chachadev.core.domain.usecase.GetShowEpisodesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

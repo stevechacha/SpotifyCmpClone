@@ -1,13 +1,12 @@
 package com.chachadev.spotifycmpclone.di
 
-import com.chachadev.spotifycmpclone.data.api.SpotifyApi
-import com.chachadev.spotifycmpclone.data.network.HttpClientFactory
-import com.chachadev.spotifycmpclone.data.repository.SpotifyRepositoryImpl
-import com.chachadev.spotifycmpclone.domain.repository.SpotifyRepository
-import com.chachadev.spotifycmpclone.domain.usecase.GetArtistTopTracksUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetFeaturedPlaylistsUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.GetNewReleasesUseCase
-import com.chachadev.spotifycmpclone.domain.usecase.SearchUseCase
+import com.chachadev.core.network.factory.HttpClientFactory
+import com.chachadev.core.data.repository.SpotifyRepositoryImpl
+import com.chachadev.core.domain.repository.SpotifyRepository
+import com.chachadev.core.domain.usecase.GetArtistTopTracksUseCase
+import com.chachadev.core.domain.usecase.GetFeaturedPlaylistsUseCase
+import com.chachadev.core.domain.usecase.GetNewReleasesUseCase
+import com.chachadev.core.domain.usecase.SearchUseCase
 import com.chachadev.spotifycmpclone.presentation.viewmodel.HomeViewModel
 import com.chachadev.spotifycmpclone.presentation.viewmodel.SearchViewModel
 import org.koin.core.context.startKoin

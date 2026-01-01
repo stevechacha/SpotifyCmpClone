@@ -12,7 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
+import com.chachadev.core.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
 import com.chachadev.spotifycmpclone.utils.configureWebViewForAuth
 import com.chachadev.spotifycmpclone.utils.storeAuthCode

@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
+import com.chachadev.core.data.auth.AuthManager
 import com.chachadev.spotifycmpclone.presentation.viewmodel.ProfileViewModel
 import com.chachadev.spotifycmpclone.utils.clearStoredAuthCode
 import com.chachadev.spotifycmpclone.utils.getStoredAuthCode

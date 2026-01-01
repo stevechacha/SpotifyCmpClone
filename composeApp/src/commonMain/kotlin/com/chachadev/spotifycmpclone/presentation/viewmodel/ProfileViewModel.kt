@@ -2,9 +2,9 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.data.auth.AuthManager
-import com.chachadev.spotifycmpclone.domain.model.User
-import com.chachadev.spotifycmpclone.domain.repository.SpotifyRepository
+import com.chachadev.core.data.auth.AuthManager
+import com.chachadev.core.domain.model.User
+import com.chachadev.core.domain.repository.SpotifyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

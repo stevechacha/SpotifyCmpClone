@@ -2,8 +2,8 @@ package com.chachadev.spotifycmpclone.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chachadev.spotifycmpclone.domain.model.Track
-import com.chachadev.spotifycmpclone.domain.usecase.GetTrackDetailsUseCase
+import com.chachadev.core.domain.model.Track
+import com.chachadev.core.domain.usecase.GetTrackDetailsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

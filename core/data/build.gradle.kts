@@ -11,8 +11,10 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.domain)
             implementation(projects.core.network)
+            implementation(projects.core.database)
             implementation(libs.bundles.ktor.common)
             implementation(libs.bundles.koin.common)
+            implementation(libs.kotlinx.coroutinesCore)
 
         }
     }
